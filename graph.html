@@ -85,7 +85,7 @@ const TAGS = {
   "Computer Vision":  "#e879f9",
   "CS Foundations":   "#94a3b8",
   "Networking":       "#64748b",
-  "IR":               "#a3a3a3",
+  "Statistical & ML": "#a3a3a3",
 };
 
 const nodes = [
@@ -118,13 +118,13 @@ const nodes = [
   { id: "conformer-viewer",         tags: ["Chemical"] },
   { id: "spectral-color",           tags: ["Chemical", "Math"] },
   { id: "qft-viz",                  tags: ["Math"] },
-  { id: "backprop",                 tags: ["Math", "Literate"] },
+  { id: "backprop",                 tags: ["Math", "Literate", "Statistical & ML"] },
   { id: "gpu-patterns",             tags: ["GPU"] },
   { id: "tinyvm",                   tags: ["CS Foundations"] },
   { id: "tinyos",                   tags: ["CS Foundations"] },
   { id: "universal-turing-machine", tags: ["CS Foundations"] },
   { id: "kanbun-lang",              tags: ["CS Foundations"] },
-  { id: "plato",                    tags: ["IR"] },
+  { id: "plato",                    tags: ["Statistical & ML"] },
   { id: "tidal-sphere",             tags: ["Simulation", "3D Rendering"] },
   { id: "macrobook",                tags: ["CS Foundations"] },
   { id: "telescope",                tags: ["Networking"] },
@@ -199,6 +199,8 @@ const edges = [
   ["terrain-faulting","tidal-sphere"],
   // Medical ↔ Math
   ["visible-human-explore","backprop"],
+  // Statistical & ML
+  ["plato","backprop"],
   // CS Foundations ↔ Networking
   ["tinyos","telescope"],
 ];
