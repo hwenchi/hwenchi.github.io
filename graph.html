@@ -9,7 +9,7 @@
     body { background: #0f0f11; font-family: ui-sans-serif, system-ui, sans-serif; overflow: hidden; }
     svg { width: 100vw; height: 100vh; }
     .link { stroke: #333; stroke-width: 1px; }
-    .node { cursor: grab; }
+    .node { cursor: pointer; }
     .node:active { cursor: grabbing; }
     .node text {
       font-size: 10px;
@@ -236,6 +236,9 @@ const node = g.append("g").selectAll("g")
     .on("start", (e, d) => { if (!e.active) simulation.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
     .on("drag",  (e, d) => { d.fx = e.x; d.fy = e.y; })
     .on("end",   (e, d) => { if (!e.active) simulation.alphaTarget(0); d.fx = null; d.fy = null; }))
+  .on("click", (e, d) => {
+    window.open(`https://github.com/GalMunGral/${d.id}`, "_blank");
+  })
   .on("mouseover", (e, d) => {
     tooltip.style.display = "block";
     ttName.textContent = d.id;
