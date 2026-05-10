@@ -140,7 +140,6 @@ const TAG_COLORS = {
   "Geospatial":       "hsl(152,62%,52%)",
   "Medical":          "hsl(175,62%,50%)",
   "Chemical":         "hsl(330,70%,65%)",
-  "Math":             "hsl(270,60%,67%)",
   "Computer Vision":  "hsl(300,62%,63%)",
   "Statistical & ML": "hsl(245,55%,67%)",
   "CS Foundations":   "hsl(220,16%,58%)",
@@ -161,6 +160,29 @@ const W = window.innerWidth, H = window.innerHeight;
 const svg = d3.select("#svg");
 const g = svg.append("g");
 
+const TAG_POS = {
+  "CS Foundations":   [0.12, 0.80],
+  "Networking":       [0.12, 0.90],
+  "UI":               [0.12, 0.20],
+  "2D Graphics":      [0.25, 0.20],
+  "3D Rendering":     [0.80, 0.15],
+  "GPU":              [0.70, 0.25],
+  "Simulation":       [0.50, 0.45],
+  "Geospatial":       [0.60, 0.40],
+  "Medical":          [0.65, 0.55],
+  "Chemical":         [0.70, 0.65],
+  "Computer Vision":  [0.80, 0.30],
+  "Statistical & ML": [0.85, 0.82],
+};
+
+for (const d of NODES) {
+  const pos = TAG_POS[d.tags[0]];
+  if (pos) {
+    d.x = pos[0] * W + (Math.random() - 0.5) * 60;
+    d.y = pos[1] * H + (Math.random() - 0.5) * 60;
+  }
+}
+
 svg.call(d3.zoom().scaleExtent([0.1, 5]).on("zoom", e => g.attr("transform", e.transform)));
 
 const PAD = 80;
@@ -173,6 +195,25 @@ function boundForce() {
   }
 }
 
+function clusterCohesion(alpha) {
+  const centroids = {};
+  const counts = {};
+  for (const d of NODES) {
+    const tag = d.tags[0];
+    if (!centroids[tag]) { centroids[tag] = { x: 0, y: 0 }; counts[tag] = 0; }
+    centroids[tag].x += d.x; centroids[tag].y += d.y; counts[tag]++;
+  }
+  for (const tag in centroids) {
+    centroids[tag].x /= counts[tag];
+    centroids[tag].y /= counts[tag];
+  }
+  for (const d of NODES) {
+    const c = centroids[d.tags[0]];
+    d.vx += (c.x - d.x) * alpha * 0.08;
+    d.vy += (c.y - d.y) * alpha * 0.08;
+  }
+}
+
 const simulation = d3.forceSimulation(NODES)
   .force("link", d3.forceLink(links).id(d => d.id)
     .distance(d => d.cross ? 160 : 65)
@@ -180,7 +221,8 @@ const simulation = d3.forceSimulation(NODES)
   .force("charge", d3.forceManyBody().strength(-200))
   .force("center", d3.forceCenter(W / 2, H / 2))
   .force("collision", d3.forceCollide(26))
-  .force("bound", boundForce);
+  .force("bound", boundForce)
+  .force("cohesion", clusterCohesion);
 
 const R = 9;
 const pie = d3.pie().sort(null).value(() => 1);
