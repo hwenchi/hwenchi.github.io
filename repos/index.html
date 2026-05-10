@@ -130,22 +130,13 @@ const simulation = d3.forceSimulation(NODES)
   .force("collision", d3.forceCollide(26))
   .force("cluster", clusterForce);
 
-// Precompute blended color per node (average RGB of all tag colors)
-function blendColors(tags) {
-  let r = 0, g = 0, b = 0;
-  for (const t of tags) {
-    const c = d3.color(TAG_COLORS[t]).rgb();
-    r += c.r; g += c.g; b += c.b;
-  }
-  return d3.rgb(r / tags.length, g / tags.length, b / tags.length).toString();
-}
-for (const d of NODES) d.color = blendColors(d.tags);
+const R = 9;
+const pie = d3.pie().sort(null).value(() => 1);
+const arc = d3.arc().innerRadius(0).outerRadius(R);
 
 const link = g.append("g").selectAll("line")
   .data(links).join("line").attr("class", "link")
   .attr("stroke-width", d => d.rating * 0.5);
-
-const R = 9;
 
 const tooltip = document.getElementById("tooltip");
 const ttName = tooltip.querySelector(".name");
@@ -171,7 +162,15 @@ const node = g.append("g").selectAll("g")
   })
   .on("mouseout", () => { tooltip.style.display = "none"; });
 
-node.append("circle").attr("r", R).attr("fill", d => d.color).attr("stroke", "#1a1a1d").attr("stroke-width", 1);
+node.each(function(d) {
+  d3.select(this).selectAll("path")
+    .data(pie(d.tags))
+    .join("path")
+    .attr("d", arc)
+    .attr("fill", s => TAG_COLORS[d.tags[s.index]])
+    .attr("stroke", "#1a1a1d")
+    .attr("stroke-width", 0.5);
+});
 node.append("text").text(d => d.id).attr("x", R + 4);
 
 simulation.on("tick", () => {
