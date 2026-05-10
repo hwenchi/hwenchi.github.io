@@ -1,3 +1,33 @@
+// Map from node id to live demo URL. Only nodes with an entry here show the popup.
+export const DEMOS = {
+  "gui-first-principles": "https://galmungral.github.io/gui-first-principles/",
+  "michelangelo":         "https://galmungral.github.io/michelangelo/",
+  "vector-rendering":     "https://galmungral.github.io/vector-rendering/",
+  "newton-vg":            "https://galmungral.github.io/newton-vg/",
+  "gl-raytracer":         "https://galmungral.github.io/gl-raytracer/",
+  "3d-rasterizer":        "https://galmungral.github.io/3d-rasterizer/",
+  "gl-fdm-2d":            "https://galmungral.github.io/gl-fdm-2d/",
+  "gl-fdm-3d":            "https://galmungral.github.io/gl-fdm-3d/",
+  "wasm-particle-sim":    "https://galmungral.github.io/wasm-particle-sim/",
+  "wasm-fvm-cfd":         "https://galmungral.github.io/wasm-fvm-cfd/",
+  "hillshade":            "https://galmungral.github.io/hillshade/",
+  "terrain-faulting":     "https://galmungral.github.io/terrain-faulting/",
+  "oblique-mercator":     "https://galmungral.github.io/oblique-mercator/",
+  "raster-tile-renderer": "https://galmungral.github.io/raster-tile-renderer/",
+  "vector-tiles-gl":      "https://galmungral.github.io/vector-tiles-gl/",
+  "visible-human-vtk":    "https://galmungral.github.io/visible-human-vtk/",
+  "visible-human-slicer": "https://galmungral.github.io/visible-human-slicer/",
+  "visible-human-volume": "https://galmungral.github.io/visible-human-volume/",
+  "shape-from-shading":   "https://galmungral.github.io/shape-from-shading/",
+  "mol-renderer":         "https://galmungral.github.io/mol-renderer/",
+  "conformer-viewer":     "https://galmungral.github.io/conformer-viewer/",
+  "spectral-color":       "https://galmungral.github.io/spectral-color/",
+  "qft-viz":              "https://galmungral.github.io/qft-viz/",
+  "kanbun-lang":          "https://galmungral.github.io/kanbun-lang/",
+  "tidal-sphere":         "https://galmungral.github.io/tidal-sphere/",
+  "macrobook":            "https://galmungral.github.io/macrobook/",
+};
+
 export const TAGS = [
   "UI",
   "2D Graphics",
