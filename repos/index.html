@@ -67,6 +67,15 @@
     #modal-close:hover { color: #fff; }
     #demo-frame { flex: 1 1 auto; border: none; }
     #demo-frame.hidden { display: none; }
+    #demo-placeholder {
+      flex: 1 1 auto;
+      display: none;
+      align-items: center; justify-content: center;
+      color: #444; font-size: 13px;
+    }
+    #demo-placeholder.visible { display: flex; }
+    #demo-placeholder a { color: #666; text-decoration: none; }
+    #demo-placeholder a:hover { color: #aaa; }
     #readme-panel {
       flex: 0 0 340px;
       overflow-y: auto;
@@ -106,6 +115,7 @@
   <div id="modal-inner">
     <button id="modal-close">✕</button>
     <iframe id="demo-frame" title="Demo"></iframe>
+    <div id="demo-placeholder"></div>
     <div id="readme-panel"></div>
   </div>
 </div>
@@ -263,9 +273,10 @@ simulation.on("tick", () => {
 });
 
 // Modal
-const modal      = document.getElementById("modal");
-const demoFrame  = document.getElementById("demo-frame");
-const readmePane = document.getElementById("readme-panel");
+const modal       = document.getElementById("modal");
+const demoFrame   = document.getElementById("demo-frame");
+const demoPlaceholder = document.getElementById("demo-placeholder");
+const readmePane  = document.getElementById("readme-panel");
 
 document.getElementById("modal-close").onclick = () => {
   modal.classList.remove("open");
@@ -276,6 +287,8 @@ modal.addEventListener("click", e => { if (e.target === modal) { modal.classList
 async function openModal(id, demoUrl) {
   demoFrame.src = demoUrl || "";
   demoFrame.classList.toggle("hidden", !demoUrl);
+  demoPlaceholder.classList.toggle("visible", !demoUrl);
+  demoPlaceholder.innerHTML = demoUrl ? "" : `<a href="https://github.com/GalMunGral/${id}" target="_blank">github.com/GalMunGral/${id}</a>`;
   readmePane.innerHTML = "<p style='color:#555'>Loading…</p>";
   modal.classList.add("open");
 
