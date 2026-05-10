@@ -131,7 +131,6 @@ import { TAGS, NODES, CONNECTIONS, DEMOS } from "./data.js";
 // Applied viz (teal→pink): Medical, Chemical
 // Abstract (purple→violet): Math, Computer Vision, Statistical & ML
 // Systems (slate): CS Foundations, Networking
-// Cross-cutting (light gray): Literate
 const TAG_COLORS = {
   "UI":               "hsl(210,75%,65%)",
   "2D Graphics":      "hsl(190,70%,58%)",
@@ -146,21 +145,16 @@ const TAG_COLORS = {
   "Statistical & ML": "hsl(245,55%,67%)",
   "CS Foundations":   "hsl(220,16%,58%)",
   "Networking":       "hsl(220,16%,42%)",
-  "Literate":         "hsl(0,0%,76%)",
 };
 
-// Flatten edges, tracking whether each is within-cluster or cross-cluster
-const edgeSet = new Set();
+const nodeTagSet = new Map(NODES.map(n => [n.id, new Set(n.tags)]));
 const links = [];
-for (const [group, pairs] of Object.entries(CONNECTIONS)) {
-  const isCross = group.includes("—");
-  for (const [s, t, rating] of pairs) {
-    const key = [s, t].sort().join("|||");
-    if (!edgeSet.has(key)) {
-      edgeSet.add(key);
-      links.push({ source: s, target: t, cross: isCross, rating });
-    }
-  }
+for (const [s, t, rating] of CONNECTIONS) {
+  if (rating === 0) continue;
+  const sTags = nodeTagSet.get(s);
+  const tTags = nodeTagSet.get(t);
+  const cross = !sTags || !tTags || ![...sTags].some(tag => tTags.has(tag));
+  links.push({ source: s, target: t, cross, rating });
 }
 
 const W = window.innerWidth, H = window.innerHeight;
@@ -168,40 +162,6 @@ const svg = d3.select("#svg");
 const g = svg.append("g");
 
 svg.call(d3.zoom().scaleExtent([0.1, 5]).on("zoom", e => g.attr("transform", e.transform)));
-
-// Target positions per primary tag (x, y) as fractions of viewport
-// Left-bottom = PL & Systems; top-right = Visualization
-const CLUSTER_POS = {
-  "CS Foundations":   [0.08, 0.80],
-  "Networking":       [0.08, 0.65],
-  "Statistical & ML": [0.85, 0.20],
-  "UI":               [0.25, 0.45],
-  "2D Graphics":      [0.30, 0.35],
-  "3D Rendering":     [0.40, 0.30],
-  "GPU":              [0.45, 0.40],
-  "Simulation":       [0.55, 0.45],
-  "Geospatial":       [0.65, 0.55],
-  "Medical":          [0.75, 0.55],
-  "Chemical":         [0.80, 0.65],
-  "Math":             [0.80, 0.35],
-  "Computer Vision":  [0.75, 0.30],
-  "Literate":         [0.30, 0.55],
-};
-
-const CORNER_PULL = {
-  "CS Foundations": [0.08, 0.85],
-  "Networking":     [0.08, 0.85],
-  "Statistical & ML": [0.92, 0.08],
-};
-
-function clusterForce(alpha) {
-  for (const d of NODES) {
-    const pos = CORNER_PULL[d.tags[0]];
-    if (!pos) continue;
-    d.vx += (pos[0] * W - d.x) * alpha * 0.15;
-    d.vy += (pos[1] * H - d.y) * alpha * 0.15;
-  }
-}
 
 const PAD = 80;
 function boundForce() {
@@ -217,11 +177,10 @@ const simulation = d3.forceSimulation(NODES)
   .force("link", d3.forceLink(links).id(d => d.id)
     .distance(d => d.cross ? 160 : 65)
     .strength(d => (d.cross ? 0.3 : 0.8) * (d.rating / 3)))
-  .force("charge", d3.forceManyBody().strength(-280))
+  .force("charge", d3.forceManyBody().strength(-200))
   .force("center", d3.forceCenter(W / 2, H / 2))
   .force("collision", d3.forceCollide(26))
-  .force("bound", boundForce)
-  .force("cluster", clusterForce);
+  .force("bound", boundForce);
 
 const R = 9;
 const pie = d3.pie().sort(null).value(() => 1);
