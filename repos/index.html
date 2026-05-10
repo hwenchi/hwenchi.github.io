@@ -161,15 +161,15 @@ const svg = d3.select("#svg");
 const g = svg.append("g");
 
 const TAG_POS = {
-  "3D Rendering":     [0.15, 0.15],
-  "GPU":              [0.25, 0.22],
-  "Computer Vision":  [0.20, 0.30],
+  "3D Rendering":     [0.50, 0.45],
+  "GPU":              [0.45, 0.40],
+  "Computer Vision":  [0.40, 0.35],
+  "Medical":          [0.15, 0.18],
+  "Chemical":         [0.22, 0.25],
+  "Geospatial":       [0.15, 0.50],
   "2D Graphics":      [0.35, 0.65],
   "UI":               [0.15, 0.82],
-  "Simulation":       [0.50, 0.48],
-  "Geospatial":       [0.55, 0.55],
-  "Medical":          [0.65, 0.45],
-  "Chemical":         [0.70, 0.35],
+  "Simulation":       [0.55, 0.55],
   "Statistical & ML": [0.82, 0.15],
   "Networking":       [0.80, 0.88],
   "CS Foundations":   [0.85, 0.80],
@@ -218,11 +218,11 @@ const simulation = d3.forceSimulation(NODES)
   .force("link", d3.forceLink(links).id(d => d.id)
     .distance(d => d.cross ? 160 : 65)
     .strength(d => (d.cross ? 0.1 : 0.4) * (d.rating / 3)))
-  .force("charge", d3.forceManyBody().strength(-600))
+  .force("charge", d3.forceManyBody().strength(-200))
   .force("center", d3.forceCenter(W / 2, H / 2))
   .force("collision", d3.forceCollide(26))
   .force("bound", boundForce)
-  .force("cohesion", clusterCohesion);
+  // .force("cohesion", clusterCohesion);
 
 const R = 9;
 const pie = d3.pie().sort(null).value(() => 1);
