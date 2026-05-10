@@ -303,6 +303,8 @@ async function openModal(id, demoUrl) {
   }
   if (!md) { readmePane.innerHTML = "<p style='color:#555'>No README found.</p>"; return; }
 
+  // GitHub inline math $`expr`$ → $expr$ so KaTeX can see it
+  md = md.replace(/\$`([^`]+)`\$/g, '$$$1$$');
   readmePane.innerHTML = marked.parse(md);
 
   // Render ```math fenced blocks (become <code class="language-math">)
