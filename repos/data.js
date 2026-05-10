@@ -1,19 +1,19 @@
-export const TAGS = {
-  "UI":               "#60a5fa",
-  "2D Graphics":      "#38bdf8",
-  "3D Rendering":     "#f97316",
-  "GPU":              "#ef4444",
-  "Simulation":       "#facc15",
-  "Geospatial":       "#34d399",
-  "Medical":          "#a78bfa",
-  "Chemical":         "#f472b6",
-  "Math":             "#fb923c",
-  "Literate":         "#cbd5e1",
-  "Computer Vision":  "#e879f9",
-  "CS Foundations":   "#94a3b8",
-  "Networking":       "#64748b",
-  "Statistical & ML": "#a3a3a3",
-};
+export const TAGS = [
+  "UI",
+  "2D Graphics",
+  "3D Rendering",
+  "GPU",
+  "Simulation",
+  "Geospatial",
+  "Medical",
+  "Chemical",
+  "Math",
+  "Computer Vision",
+  "Statistical & ML",
+  "CS Foundations",
+  "Networking",
+  "Literate",
+];
 
 export const NODES = [
   { id: "replay",                   tags: ["UI", "2D Graphics"] },
