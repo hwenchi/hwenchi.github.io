@@ -111,13 +111,28 @@ const CLUSTER_POS = {
   "Literate":         [0.30, 0.55],
 };
 
-// Cluster cohesion: pull nodes toward their primary-tag target position
+const CORNER_PULL = {
+  "CS Foundations": [0.08, 0.85],
+  "Networking":     [0.08, 0.85],
+  "Statistical & ML": [0.92, 0.08],
+};
+
 function clusterForce(alpha) {
   for (const d of NODES) {
-    const pos = CLUSTER_POS[d.tags[0]];
-    if (!pos) return;
-    d.vx += (pos[0] * W - d.x) * alpha * 0.08;
-    d.vy += (pos[1] * H - d.y) * alpha * 0.08;
+    const pos = CORNER_PULL[d.tags[0]];
+    if (!pos) continue;
+    d.vx += (pos[0] * W - d.x) * alpha * 0.15;
+    d.vy += (pos[1] * H - d.y) * alpha * 0.15;
+  }
+}
+
+const PAD = 40;
+function boundForce() {
+  for (const d of NODES) {
+    if (d.x < PAD)      d.vx += (PAD - d.x) * 0.1;
+    if (d.x > W - PAD)  d.vx -= (d.x - (W - PAD)) * 0.1;
+    if (d.y < PAD)      d.vy += (PAD - d.y) * 0.1;
+    if (d.y > H - PAD)  d.vy -= (d.y - (H - PAD)) * 0.1;
   }
 }
 
@@ -128,6 +143,7 @@ const simulation = d3.forceSimulation(NODES)
   .force("charge", d3.forceManyBody().strength(-280))
   .force("center", d3.forceCenter(W / 2, H / 2))
   .force("collision", d3.forceCollide(26))
+  .force("bound", boundForce)
   .force("cluster", clusterForce);
 
 const R = 9;
