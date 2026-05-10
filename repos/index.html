@@ -126,7 +126,7 @@ function clusterForce(alpha) {
   }
 }
 
-const PAD = 40;
+const PAD = 80;
 function boundForce() {
   for (const d of NODES) {
     if (d.x < PAD)      d.vx += (PAD - d.x) * 0.1;
