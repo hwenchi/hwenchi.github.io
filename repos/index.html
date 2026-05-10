@@ -8,7 +8,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #0f0f11; font-family: ui-sans-serif, system-ui, sans-serif; overflow: hidden; }
     svg { width: 100vw; height: 100vh; }
-    .link { stroke: #333; stroke-width: 1px; }
+    .link { stroke: #333; }
     .node { cursor: pointer; }
     .node:active { cursor: grabbing; }
     .node text { font-size: 10px; fill: #bbb; pointer-events: none; dominant-baseline: central; }
@@ -77,11 +77,11 @@ const edgeSet = new Set();
 const links = [];
 for (const [group, pairs] of Object.entries(CONNECTIONS)) {
   const isCross = group.includes("—");
-  for (const [s, t] of pairs) {
+  for (const [s, t, rating] of pairs) {
     const key = [s, t].sort().join("|||");
     if (!edgeSet.has(key)) {
       edgeSet.add(key);
-      links.push({ source: s, target: t, cross: isCross });
+      links.push({ source: s, target: t, cross: isCross, rating });
     }
   }
 }
@@ -124,7 +124,7 @@ function clusterForce(alpha) {
 const simulation = d3.forceSimulation(NODES)
   .force("link", d3.forceLink(links).id(d => d.id)
     .distance(d => d.cross ? 160 : 65)
-    .strength(d => d.cross ? 0.3 : 0.8))
+    .strength(d => (d.cross ? 0.3 : 0.8) * (d.rating / 3)))
   .force("charge", d3.forceManyBody().strength(-280))
   .force("center", d3.forceCenter(W / 2, H / 2))
   .force("collision", d3.forceCollide(26))
@@ -142,7 +142,8 @@ function blendColors(tags) {
 for (const d of NODES) d.color = blendColors(d.tags);
 
 const link = g.append("g").selectAll("line")
-  .data(links).join("line").attr("class", "link");
+  .data(links).join("line").attr("class", "link")
+  .attr("stroke-width", d => d.rating * 0.5);
 
 const R = 9;
 
