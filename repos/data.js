@@ -30,19 +30,19 @@ export const DEMOS = {
 
 
 export const TAGS = [
-  "UI",
-  "2D Graphics",
-  "3D Graphics",
-  "GPU",
-  "Simulation",
   "Geospatial",
-  "Medical",
+  "2D Graphics",
+  "UI",
+  "Simulation",
+  "GPU",
+  "3D Graphics",
   "Chemical",
+  "Medical",
+  "Visualization",
   "Computer Vision",
   "Statistical & ML",
-  "CS Foundations",
   "Networking",
-  "Visualization",
+  "CS Foundations",
 ];
 
 export const NODES = [

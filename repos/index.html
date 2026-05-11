@@ -261,26 +261,25 @@
       import { marked } from "https://esm.sh/marked@9";
       import { TAGS, NODES, CONNECTIONS, DEMOS } from "./data.js";
 
-      // Colors follow a semantic spectrum: adjacent hues = related topics
-      // Visual computing (blue→cyan→orange→red): UI, 2D Graphics, 3D Rendering, GPU
-      // Physics (yellow→green): Simulation, Geospatial
-      // Applied viz (teal→pink): Medical, Chemical
-      // Abstract (purple→violet): Math, Computer Vision, Statistical & ML
-      // Systems (slate): CS Foundations, Networking
+      // Two spines converging at Visualization (purple):
+      // warm:  Simulation→GPU→3D Graphics→Chemical→Medical→Visualization
+      // cool:  UI→2D Graphics→Geospatial→Visualization
+      // systems: CS Foundations / Networking (grey shades)
+      // AI: Statistical & ML / Computer Vision (between blue and purple)
       const TAG_COLORS = {
-        UI: "hsl(210,75%,65%)",
-        "2D Graphics": "hsl(190,70%,58%)",
-        "3D Graphics": "hsl(25,88%,58%)",
-        GPU: "hsl(0,78%,62%)",
-        Simulation: "hsl(48,88%,58%)",
-        Geospatial: "hsl(152,62%,52%)",
-        Medical: "hsl(175,62%,50%)",
-        Chemical: "hsl(330,70%,65%)",
-        "Computer Vision": "hsl(300,62%,63%)",
-        "Statistical & ML": "hsl(245,55%,67%)",
-        "CS Foundations": "hsl(220,16%,58%)",
-        Networking: "hsl(220,16%,42%)",
-        Visualization: "hsl(280,60%,65%)",
+        "3D Graphics":     "hsl(5,85%,60%)",
+        GPU:               "hsl(28,88%,58%)",
+        Simulation:        "hsl(55,85%,52%)",
+        UI:                "hsl(120,55%,52%)",
+        "2D Graphics":     "hsl(185,65%,55%)",
+        Geospatial:        "hsl(215,62%,58%)",
+        "CS Foundations":  "hsl(220,12%,60%)",
+        Networking:        "hsl(220,12%,40%)",
+        "Statistical & ML":"hsl(245,52%,65%)",
+        "Computer Vision": "hsl(262,58%,63%)",
+        Visualization:     "hsl(278,60%,62%)",
+        Medical:           "hsl(315,62%,62%)",
+        Chemical:          "hsl(340,68%,63%)",
       };
 
       const nodeTagSet = new Map(NODES.map((n) => [n.id, new Set(n.tags)]));
