@@ -282,17 +282,32 @@
         Chemical:          "hsl(340,68%,63%)",
       };
 
-      const nodeTagSet = new Map(NODES.map((n) => [n.id, new Set(n.tags)]));
-      const links = [];
-      for (const [s, t] of CONNECTIONS) {
-        const sTags = nodeTagSet.get(s);
-        const tTags = nodeTagSet.get(t);
-        const cross = !sTags || !tTags || ![...sTags].some((tag) => tTags.has(tag));
-        links.push({ source: s, target: t, cross });
-      }
+      const links = CONNECTIONS.map(([s, t]) => ({ source: s, target: t }));
 
       const W = window.innerWidth,
         H = window.innerHeight;
+
+      const TAG_X = {
+        "CS Foundations":  0.1,
+        Networking:        0.15,
+        "Statistical & ML":0.22,
+        "Computer Vision": 0.28,
+        "2D Graphics":     0.42,
+        Geospatial:        0.48,
+        UI:                0.55,
+        "3D Graphics":     0.68,
+        GPU:               0.72,
+        Simulation:        0.76,
+        Medical:           0.82,
+        Chemical:          0.86,
+        Visualization:     0.90,
+      };
+      for (const d of NODES) {
+        const xFrac = TAG_X[d.tags[0]] ?? 0.5;
+        d.x = xFrac * W + (Math.random() - 0.5) * 80;
+        d.y = H / 2 + (Math.random() - 0.5) * H * 0.6;
+      }
+
       const svg = d3.select("#svg");
       const g = svg.append("g");
 
@@ -322,10 +337,10 @@
           d3
             .forceLink(links)
             .id((d) => d.id)
-            .distance((d) => (d.cross ? 160 : 65))
-            .strength((d) => (d.cross ? 0.1 : 0.5 )),
+            .distance(80)
+            .strength(0.4),
         )
-        .force("charge", d3.forceManyBody().strength(-200))
+        .force("charge", d3.forceManyBody().strength(-150))
         .force("center", d3.forceCenter(W / 2, H / 2))
         .force("collision", d3.forceCollide(26))
         .force("bound", boundForce);
