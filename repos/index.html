@@ -270,7 +270,7 @@
       const TAG_COLORS = {
         UI: "hsl(210,75%,65%)",
         "2D Graphics": "hsl(190,70%,58%)",
-        "3D Rendering": "hsl(25,88%,58%)",
+        "3D Graphics": "hsl(25,88%,58%)",
         GPU: "hsl(0,78%,62%)",
         Simulation: "hsl(48,88%,58%)",
         Geospatial: "hsl(152,62%,52%)",
@@ -280,17 +280,16 @@
         "Statistical & ML": "hsl(245,55%,67%)",
         "CS Foundations": "hsl(220,16%,58%)",
         Networking: "hsl(220,16%,42%)",
+        Visualization: "hsl(280,60%,65%)",
       };
 
       const nodeTagSet = new Map(NODES.map((n) => [n.id, new Set(n.tags)]));
       const links = [];
-      for (const [s, t, rating] of CONNECTIONS) {
-        if (rating === 0) continue;
+      for (const [s, t] of CONNECTIONS) {
         const sTags = nodeTagSet.get(s);
         const tTags = nodeTagSet.get(t);
-        const cross =
-          !sTags || !tTags || ![...sTags].some((tag) => tTags.has(tag));
-        links.push({ source: s, target: t, cross, rating });
+        const cross = !sTags || !tTags || ![...sTags].some((tag) => tTags.has(tag));
+        links.push({ source: s, target: t, cross });
       }
 
       const W = window.innerWidth,
@@ -298,28 +297,6 @@
       const svg = d3.select("#svg");
       const g = svg.append("g");
 
-      const TAG_POS = {
-        "3D Rendering": [0.5, 0.45],
-        GPU: [0.45, 0.4],
-        "Computer Vision": [0.4, 0.35],
-        Medical: [0.15, 0.18],
-        Chemical: [0.22, 0.25],
-        Geospatial: [0.15, 0.5],
-        "2D Graphics": [0.35, 0.65],
-        UI: [0.15, 0.82],
-        Simulation: [0.55, 0.55],
-        "Statistical & ML": [0.82, 0.15],
-        Networking: [0.8, 0.88],
-        "CS Foundations": [0.85, 0.8],
-      };
-
-      for (const d of NODES) {
-        const pos = TAG_POS[d.tags[0]];
-        if (pos) {
-          d.x = pos[0] * W + (Math.random() - 0.5) * 60;
-          d.y = pos[1] * H + (Math.random() - 0.5) * 60;
-        }
-      }
 
       svg.call(
         d3
@@ -338,29 +315,6 @@
         }
       }
 
-      function clusterCohesion(alpha) {
-        const centroids = {};
-        const counts = {};
-        for (const d of NODES) {
-          const tag = d.tags[0];
-          if (!centroids[tag]) {
-            centroids[tag] = { x: 0, y: 0 };
-            counts[tag] = 0;
-          }
-          centroids[tag].x += d.x;
-          centroids[tag].y += d.y;
-          counts[tag]++;
-        }
-        for (const tag in centroids) {
-          centroids[tag].x /= counts[tag];
-          centroids[tag].y /= counts[tag];
-        }
-        for (const d of NODES) {
-          const c = centroids[d.tags[0]];
-          d.vx += (c.x - d.x) * alpha * 0.08;
-          d.vy += (c.y - d.y) * alpha * 0.08;
-        }
-      }
 
       const simulation = d3
         .forceSimulation(NODES)
@@ -370,13 +324,12 @@
             .forceLink(links)
             .id((d) => d.id)
             .distance((d) => (d.cross ? 160 : 65))
-            .strength((d) => (d.cross ? 0.1 : 0.4) * (d.rating / 3)),
+            .strength((d) => (d.cross ? 0.1 : 0.5 )),
         )
-        .force("charge", d3.forceManyBody().strength(-250))
+        .force("charge", d3.forceManyBody().strength(-200))
         .force("center", d3.forceCenter(W / 2, H / 2))
         .force("collision", d3.forceCollide(26))
-        .force("bound", boundForce)
-        .force("cohesion", clusterCohesion);
+        .force("bound", boundForce);
 
       const R = 9;
       const pie = d3
@@ -391,7 +344,7 @@
         .data(links)
         .join("line")
         .attr("class", "link")
-        .attr("stroke-width", (d) => d.rating * 0.5);
+        .attr("stroke-width", 1);
 
       const tooltip = document.getElementById("tooltip");
       const ttName = tooltip.querySelector(".name");
