@@ -1,358 +1,574 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Projects — Wenqi He</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.css">
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/contrib/auto-render.min.js"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #0f0f11; font-family: ui-sans-serif, system-ui, sans-serif; overflow: hidden; }
-    svg { width: 100vw; height: 100vh; }
-    .link { stroke: #333; }
-    .node { cursor: pointer; }
-    .node:active { cursor: grabbing; }
-    .node text { font-size: 10px; fill: #bbb; pointer-events: none; dominant-baseline: central; }
-    #legend {
-      position: fixed; top: 20px; left: 20px;
-      display: flex; flex-direction: column; gap: 4px;
-    }
-    .legend-item {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 11px; color: #666; cursor: pointer;
-      padding: 3px 8px; border-radius: 4px;
-      transition: background 0.15s, color 0.15s;
-      user-select: none;
-    }
-    .legend-item:hover { background: rgba(255,255,255,0.05); color: #ccc; }
-    .legend-item.active { color: #fff; background: rgba(255,255,255,0.08); }
-    .legend-swatch { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-    #tooltip {
-      position: fixed; display: none;
-      background: rgba(15,15,17,0.95); border: 1px solid #2a2a2e;
-      border-radius: 8px; padding: 8px 12px;
-      font-size: 11px; color: #eee; pointer-events: none;
-      max-width: 240px; line-height: 1.6;
-    }
-    #tooltip .name { font-weight: 600; font-size: 12px; margin-bottom: 5px; }
-    #tooltip .tags { display: flex; flex-wrap: wrap; gap: 4px; }
-    .tag { padding: 1px 6px; border-radius: 3px; font-size: 10px; color: #000; font-weight: 500; }
-    #attr { position: fixed; bottom: 14px; right: 16px; font-size: 11px; color: #333; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Projects — Wenqi He</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.css"
+    />
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/contrib/auto-render.min.js"
+    ></script>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: #0f0f11;
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        overflow: hidden;
+      }
+      svg {
+        width: 100vw;
+        height: 100vh;
+      }
+      .link {
+        stroke: #333;
+      }
+      .node {
+        cursor: pointer;
+      }
+      .node:active {
+        cursor: grabbing;
+      }
+      .node text {
+        font-size: 10px;
+        fill: #bbb;
+        pointer-events: none;
+        dominant-baseline: central;
+      }
+      #legend {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11px;
+        color: #666;
+        cursor: pointer;
+        padding: 3px 8px;
+        border-radius: 4px;
+        transition:
+          background 0.15s,
+          color 0.15s;
+        user-select: none;
+      }
+      .legend-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: #ccc;
+      }
+      .legend-item.active {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .legend-swatch {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      #tooltip {
+        position: fixed;
+        display: none;
+        background: rgba(15, 15, 17, 0.95);
+        border: 1px solid #2a2a2e;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 11px;
+        color: #eee;
+        pointer-events: none;
+        max-width: 240px;
+        line-height: 1.6;
+      }
+      #tooltip .name {
+        font-weight: 600;
+        font-size: 12px;
+        margin-bottom: 5px;
+      }
+      #tooltip .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+      .tag {
+        padding: 1px 6px;
+        border-radius: 3px;
+        font-size: 10px;
+        color: #000;
+        font-weight: 500;
+      }
+      #attr {
+        position: fixed;
+        bottom: 14px;
+        right: 16px;
+        font-size: 11px;
+        color: #333;
+      }
 
-    /* Modal */
-    #modal {
-      display: none;
-      position: fixed; inset: 0; z-index: 100;
-      background: rgba(0,0,0,0.75);
-      align-items: center; justify-content: center;
-    }
-    #modal.open { display: flex; }
-    #modal-inner {
-      width: 92vw; height: 88vh;
-      background: #16161a;
-      border: 1px solid #2a2a2e;
-      border-radius: 10px;
-      display: flex;
-      overflow: hidden;
-      position: relative;
-    }
-    #modal-close {
-      position: absolute; top: 10px; right: 14px;
-      background: none; border: none;
-      color: #888; font-size: 20px; cursor: pointer;
-      z-index: 10; line-height: 1;
-    }
-    #modal-close:hover { color: #fff; }
-    #demo-frame { flex: 1 1 auto; border: none; }
-    #demo-frame.hidden { display: none; }
-    #demo-placeholder {
-      flex: 1 1 auto;
-      display: none;
-      align-items: center; justify-content: center;
-      color: #444; font-size: 13px;
-    }
-    #demo-placeholder.visible { display: flex; }
-    #demo-placeholder a { color: #666; text-decoration: none; }
-    #demo-placeholder a:hover { color: #aaa; }
-    #readme-panel {
-      flex: 0 0 340px;
-      overflow-y: auto;
-      padding: 20px 16px;
-      border-right: 1px solid #2a2a2e;
-      order: -1;
-      font-size: 13px; line-height: 1.7;
-      color: #ccc;
-      font-family: ui-sans-serif, system-ui, sans-serif;
-    }
-    #readme-panel h1,#readme-panel h2,#readme-panel h3 {
-      color: #eee; margin: 1.2em 0 0.4em; font-size: 1em; font-weight: 600;
-    }
-    #readme-panel h1 { font-size: 1.2em; margin-top: 0; }
-    #readme-panel p  { margin: 0.5em 0; }
-    #readme-panel a  { color: #7aafff; }
-    #readme-panel pre {
-      background: #0f0f11; border-radius: 5px;
-      padding: 10px 14px; overflow-x: auto;
-      font-size: 12px; margin: 0.8em 0;
-    }
-    #readme-panel code { font-family: ui-monospace, monospace; font-size: 12px; }
-    #readme-panel :not(pre) > code {
-      background: #222; padding: 1px 5px; border-radius: 3px;
-    }
-    #readme-panel img { max-width: 100%; border-radius: 4px; }
-    #readme-panel .katex-display { overflow-x: auto; }
-  </style>
-</head>
-<body>
-<svg id="svg"></svg>
-<div id="legend"></div>
-<div id="tooltip"><div class="name"></div><div class="tags"></div></div>
-<div id="attr">Generated by Claude</div>
+      /* Modal */
+      #modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        background: rgba(0, 0, 0, 0.75);
+        align-items: center;
+        justify-content: center;
+      }
+      #modal.open {
+        display: flex;
+      }
+      #modal-inner {
+        width: 92vw;
+        height: 88vh;
+        background: #16161a;
+        border: 1px solid #2a2a2e;
+        border-radius: 10px;
+        display: flex;
+        overflow: hidden;
+        position: relative;
+      }
+      #modal-close {
+        position: absolute;
+        top: 10px;
+        right: 14px;
+        background: none;
+        border: none;
+        color: #888;
+        font-size: 20px;
+        cursor: pointer;
+        z-index: 10;
+        line-height: 1;
+      }
+      #modal-close:hover {
+        color: #fff;
+      }
+      #demo-frame {
+        flex: 1 1 auto;
+        border: none;
+      }
+      #demo-frame.hidden {
+        display: none;
+      }
+      #demo-placeholder {
+        flex: 1 1 auto;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        color: #444;
+        font-size: 13px;
+      }
+      #demo-placeholder.visible {
+        display: flex;
+      }
+      #demo-placeholder a {
+        color: #666;
+        text-decoration: none;
+      }
+      #demo-placeholder a:hover {
+        color: #aaa;
+      }
+      #readme-panel {
+        flex: 0 0 340px;
+        overflow-y: auto;
+        padding: 20px 16px;
+        border-right: 1px solid #2a2a2e;
+        order: -1;
+        font-size: 13px;
+        line-height: 1.7;
+        color: #ccc;
+        font-family: ui-sans-serif, system-ui, sans-serif;
+      }
+      #readme-panel h1,
+      #readme-panel h2,
+      #readme-panel h3 {
+        color: #eee;
+        margin: 1.2em 0 0.4em;
+        font-size: 1em;
+        font-weight: 600;
+      }
+      #readme-panel h1 {
+        font-size: 1.2em;
+        margin-top: 0;
+      }
+      #readme-panel p {
+        margin: 0.5em 0;
+      }
+      #readme-panel a {
+        color: #7aafff;
+      }
+      #readme-panel pre {
+        background: #0f0f11;
+        border-radius: 5px;
+        padding: 10px 14px;
+        overflow-x: auto;
+        font-size: 12px;
+        margin: 0.8em 0;
+      }
+      #readme-panel code {
+        font-family: ui-monospace, monospace;
+        font-size: 12px;
+      }
+      #readme-panel :not(pre) > code {
+        background: #222;
+        padding: 1px 5px;
+        border-radius: 3px;
+      }
+      #readme-panel img {
+        max-width: 100%;
+        border-radius: 4px;
+      }
+      #readme-panel .katex-display {
+        overflow-x: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <svg id="svg"></svg>
+    <div id="legend"></div>
+    <div id="tooltip">
+      <div class="name"></div>
+      <div class="tags"></div>
+    </div>
+    <div id="attr">Generated by Claude</div>
 
-<div id="modal">
-  <div id="modal-inner">
-    <button id="modal-close">✕</button>
-    <iframe id="demo-frame" title="Demo"></iframe>
-    <div id="demo-placeholder"></div>
-    <div id="readme-panel"></div>
-  </div>
-</div>
+    <div id="modal">
+      <div id="modal-inner">
+        <button id="modal-close">✕</button>
+        <iframe id="demo-frame" title="Demo"></iframe>
+        <div id="demo-placeholder"></div>
+        <div id="readme-panel"></div>
+      </div>
+    </div>
 
-<script type="module">
-import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
-import { marked } from "https://esm.sh/marked@9";
-import { TAGS, NODES, CONNECTIONS, DEMOS } from "./data.js";
+    <script type="module">
+      import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+      import { marked } from "https://esm.sh/marked@9";
+      import { TAGS, NODES, CONNECTIONS, DEMOS } from "./data.js";
 
-// Colors follow a semantic spectrum: adjacent hues = related topics
-// Visual computing (blue→cyan→orange→red): UI, 2D Graphics, 3D Rendering, GPU
-// Physics (yellow→green): Simulation, Geospatial
-// Applied viz (teal→pink): Medical, Chemical
-// Abstract (purple→violet): Math, Computer Vision, Statistical & ML
-// Systems (slate): CS Foundations, Networking
-const TAG_COLORS = {
-  "UI":               "hsl(210,75%,65%)",
-  "2D Graphics":      "hsl(190,70%,58%)",
-  "3D Rendering":     "hsl(25,88%,58%)",
-  "GPU":              "hsl(0,78%,62%)",
-  "Simulation":       "hsl(48,88%,58%)",
-  "Geospatial":       "hsl(152,62%,52%)",
-  "Medical":          "hsl(175,62%,50%)",
-  "Chemical":         "hsl(330,70%,65%)",
-  "Computer Vision":  "hsl(300,62%,63%)",
-  "Statistical & ML": "hsl(245,55%,67%)",
-  "CS Foundations":   "hsl(220,16%,58%)",
-  "Networking":       "hsl(220,16%,42%)",
-};
+      // Colors follow a semantic spectrum: adjacent hues = related topics
+      // Visual computing (blue→cyan→orange→red): UI, 2D Graphics, 3D Rendering, GPU
+      // Physics (yellow→green): Simulation, Geospatial
+      // Applied viz (teal→pink): Medical, Chemical
+      // Abstract (purple→violet): Math, Computer Vision, Statistical & ML
+      // Systems (slate): CS Foundations, Networking
+      const TAG_COLORS = {
+        UI: "hsl(210,75%,65%)",
+        "2D Graphics": "hsl(190,70%,58%)",
+        "3D Rendering": "hsl(25,88%,58%)",
+        GPU: "hsl(0,78%,62%)",
+        Simulation: "hsl(48,88%,58%)",
+        Geospatial: "hsl(152,62%,52%)",
+        Medical: "hsl(175,62%,50%)",
+        Chemical: "hsl(330,70%,65%)",
+        "Computer Vision": "hsl(300,62%,63%)",
+        "Statistical & ML": "hsl(245,55%,67%)",
+        "CS Foundations": "hsl(220,16%,58%)",
+        Networking: "hsl(220,16%,42%)",
+      };
 
-const nodeTagSet = new Map(NODES.map(n => [n.id, new Set(n.tags)]));
-const links = [];
-for (const [s, t, rating] of CONNECTIONS) {
-  if (rating === 0) continue;
-  const sTags = nodeTagSet.get(s);
-  const tTags = nodeTagSet.get(t);
-  const cross = !sTags || !tTags || ![...sTags].some(tag => tTags.has(tag));
-  links.push({ source: s, target: t, cross, rating });
-}
+      const nodeTagSet = new Map(NODES.map((n) => [n.id, new Set(n.tags)]));
+      const links = [];
+      for (const [s, t, rating] of CONNECTIONS) {
+        if (rating === 0) continue;
+        const sTags = nodeTagSet.get(s);
+        const tTags = nodeTagSet.get(t);
+        const cross =
+          !sTags || !tTags || ![...sTags].some((tag) => tTags.has(tag));
+        links.push({ source: s, target: t, cross, rating });
+      }
 
-const W = window.innerWidth, H = window.innerHeight;
-const svg = d3.select("#svg");
-const g = svg.append("g");
+      const W = window.innerWidth,
+        H = window.innerHeight;
+      const svg = d3.select("#svg");
+      const g = svg.append("g");
 
-const TAG_POS = {
-  "3D Rendering":     [0.50, 0.45],
-  "GPU":              [0.45, 0.40],
-  "Computer Vision":  [0.40, 0.35],
-  "Medical":          [0.15, 0.18],
-  "Chemical":         [0.22, 0.25],
-  "Geospatial":       [0.15, 0.50],
-  "2D Graphics":      [0.35, 0.65],
-  "UI":               [0.15, 0.82],
-  "Simulation":       [0.55, 0.55],
-  "Statistical & ML": [0.82, 0.15],
-  "Networking":       [0.80, 0.88],
-  "CS Foundations":   [0.85, 0.80],
-};
+      const TAG_POS = {
+        "3D Rendering": [0.5, 0.45],
+        GPU: [0.45, 0.4],
+        "Computer Vision": [0.4, 0.35],
+        Medical: [0.15, 0.18],
+        Chemical: [0.22, 0.25],
+        Geospatial: [0.15, 0.5],
+        "2D Graphics": [0.35, 0.65],
+        UI: [0.15, 0.82],
+        Simulation: [0.55, 0.55],
+        "Statistical & ML": [0.82, 0.15],
+        Networking: [0.8, 0.88],
+        "CS Foundations": [0.85, 0.8],
+      };
 
-for (const d of NODES) {
-  const pos = TAG_POS[d.tags[0]];
-  if (pos) {
-    d.x = pos[0] * W + (Math.random() - 0.5) * 60;
-    d.y = pos[1] * H + (Math.random() - 0.5) * 60;
-  }
-}
+      for (const d of NODES) {
+        const pos = TAG_POS[d.tags[0]];
+        if (pos) {
+          d.x = pos[0] * W + (Math.random() - 0.5) * 60;
+          d.y = pos[1] * H + (Math.random() - 0.5) * 60;
+        }
+      }
 
-svg.call(d3.zoom().scaleExtent([0.1, 5]).on("zoom", e => g.attr("transform", e.transform)));
-
-const PAD = 80;
-function boundForce() {
-  for (const d of NODES) {
-    if (d.x < PAD)      d.vx += (PAD - d.x) * 0.1;
-    if (d.x > W - PAD)  d.vx -= (d.x - (W - PAD)) * 0.1;
-    if (d.y < PAD)      d.vy += (PAD - d.y) * 0.1;
-    if (d.y > H - PAD)  d.vy -= (d.y - (H - PAD)) * 0.1;
-  }
-}
-
-function clusterCohesion(alpha) {
-  const centroids = {};
-  const counts = {};
-  for (const d of NODES) {
-    const tag = d.tags[0];
-    if (!centroids[tag]) { centroids[tag] = { x: 0, y: 0 }; counts[tag] = 0; }
-    centroids[tag].x += d.x; centroids[tag].y += d.y; counts[tag]++;
-  }
-  for (const tag in centroids) {
-    centroids[tag].x /= counts[tag];
-    centroids[tag].y /= counts[tag];
-  }
-  for (const d of NODES) {
-    const c = centroids[d.tags[0]];
-    d.vx += (c.x - d.x) * alpha * 0.08;
-    d.vy += (c.y - d.y) * alpha * 0.08;
-  }
-}
-
-const simulation = d3.forceSimulation(NODES)
-  .force("link", d3.forceLink(links).id(d => d.id)
-    .distance(d => d.cross ? 160 : 65)
-    .strength(d => (d.cross ? 0.1 : 0.4) * (d.rating / 3)))
-  .force("charge", d3.forceManyBody().strength(-200))
-  .force("center", d3.forceCenter(W / 2, H / 2))
-  .force("collision", d3.forceCollide(26))
-  .force("bound", boundForce)
-  // .force("cohesion", clusterCohesion);
-
-const R = 9;
-const pie = d3.pie().sort(null).value(() => 1);
-const arc = d3.arc().innerRadius(0).outerRadius(R);
-
-const link = g.append("g").selectAll("line")
-  .data(links).join("line").attr("class", "link")
-  .attr("stroke-width", d => d.rating * 0.5);
-
-const tooltip = document.getElementById("tooltip");
-const ttName = tooltip.querySelector(".name");
-const ttTags = tooltip.querySelector(".tags");
-
-const node = g.append("g").selectAll("g")
-  .data(NODES).join("g").attr("class", "node")
-  .call(d3.drag()
-    .on("start", (e, d) => { if (!e.active) simulation.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
-    .on("drag",  (e, d) => { d.fx = e.x; d.fy = e.y; })
-    .on("end",   (e, d) => { if (!e.active) simulation.alphaTarget(0); d.fx = null; d.fy = null; }))
-  .on("click", (e, d) => { openModal(d.id, DEMOS[d.id]); })
-  .on("mouseover", (e, d) => {
-    tooltip.style.display = "block";
-    ttName.textContent = d.id;
-    ttTags.innerHTML = d.tags.map(t =>
-      `<span class="tag" style="background:${TAG_COLORS[t]}">${t}</span>`
-    ).join("");
-  })
-  .on("mousemove", e => {
-    tooltip.style.left = (e.clientX + 14) + "px";
-    tooltip.style.top  = (e.clientY - 10) + "px";
-  })
-  .on("mouseout", () => { tooltip.style.display = "none"; });
-
-node.each(function(d) {
-  d3.select(this).selectAll("path")
-    .data(pie(d.tags))
-    .join("path")
-    .attr("d", arc)
-    .attr("fill", s => TAG_COLORS[d.tags[s.index]])
-    .attr("stroke", "#1a1a1d")
-    .attr("stroke-width", 0.5);
-});
-node.append("text").text(d => d.id).attr("x", R + 4);
-
-simulation.on("tick", () => {
-  link.attr("x1", d => d.source.x).attr("y1", d => d.source.y)
-      .attr("x2", d => d.target.x).attr("y2", d => d.target.y);
-  node.attr("transform", d => `translate(${d.x},${d.y})`);
-});
-
-// Modal
-const modal       = document.getElementById("modal");
-const demoFrame   = document.getElementById("demo-frame");
-const demoPlaceholder = document.getElementById("demo-placeholder");
-const readmePane  = document.getElementById("readme-panel");
-
-document.getElementById("modal-close").onclick = () => {
-  modal.classList.remove("open");
-  demoFrame.src = "";
-};
-modal.addEventListener("click", e => { if (e.target === modal) { modal.classList.remove("open"); demoFrame.src = ""; } });
-
-async function openModal(id, demoUrl) {
-  demoFrame.src = demoUrl || "";
-  demoFrame.classList.toggle("hidden", !demoUrl);
-  demoPlaceholder.classList.toggle("visible", !demoUrl);
-  demoPlaceholder.innerHTML = demoUrl ? "" : `<a href="https://github.com/GalMunGral/${id}" target="_blank">github.com/GalMunGral/${id}</a>`;
-  readmePane.innerHTML = "<p style='color:#555'>Loading…</p>";
-  modal.classList.add("open");
-
-  const urls = [
-    `https://raw.githubusercontent.com/GalMunGral/${id}/main/README.md`,
-    `https://raw.githubusercontent.com/GalMunGral/${id}/master/README.md`,
-  ];
-  let md = null;
-  for (const url of urls) {
-    const r = await fetch(url);
-    if (r.ok) { md = await r.text(); break; }
-  }
-  if (!md) { readmePane.innerHTML = "<p style='color:#555'>No README found.</p>"; return; }
-
-  // GitHub inline math $`expr`$ → $expr$ so KaTeX can see it
-  md = md.replace(/\$`([^`]+)`\$/g, '$$$1$$');
-  readmePane.innerHTML = marked.parse(md);
-
-  // Render ```math fenced blocks (become <code class="language-math">)
-  readmePane.querySelectorAll("code.language-math").forEach(el => {
-    const display = document.createElement("div");
-    try {
-      window.katex.render(el.textContent, display, { displayMode: true, throwOnError: false });
-    } catch (_) { display.textContent = el.textContent; }
-    el.closest("pre").replaceWith(display);
-  });
-
-  if (window.renderMathInElement) {
-    window.renderMathInElement(readmePane, {
-      delimiters: [
-        { left: "$$", right: "$$", display: true },
-        { left: "$",  right: "$",  display: false },
-      ],
-      throwOnError: false,
-    });
-  }
-}
-
-// Legend with tag filter
-let activeTag = null;
-const legend = document.getElementById("legend");
-TAGS.forEach(tag => { const color = TAG_COLORS[tag];
-  const item = document.createElement("div");
-  item.className = "legend-item";
-  item.innerHTML = `<div class="legend-swatch" style="background:${color}"></div>${tag}`;
-  item.onclick = () => {
-    if (activeTag === tag) {
-      activeTag = null;
-      item.classList.remove("active");
-      node.style("opacity", 1);
-      link.style("opacity", 1);
-    } else {
-      activeTag = tag;
-      document.querySelectorAll(".legend-item").forEach(el => el.classList.remove("active"));
-      item.classList.add("active");
-      node.style("opacity", d => d.tags.includes(tag) ? 1 : 0.07);
-      link.style("opacity", d =>
-        d.source.tags.includes(tag) && d.target.tags.includes(tag) ? 1 : 0.03
+      svg.call(
+        d3
+          .zoom()
+          .scaleExtent([0.1, 5])
+          .on("zoom", (e) => g.attr("transform", e.transform)),
       );
-    }
-  };
-  legend.appendChild(item);
-});
-</script>
-</body>
+
+      const PAD = 80;
+      function boundForce() {
+        for (const d of NODES) {
+          if (d.x < PAD) d.vx += (PAD - d.x) * 0.1;
+          if (d.x > W - PAD) d.vx -= (d.x - (W - PAD)) * 0.1;
+          if (d.y < PAD) d.vy += (PAD - d.y) * 0.1;
+          if (d.y > H - PAD) d.vy -= (d.y - (H - PAD)) * 0.1;
+        }
+      }
+
+      function clusterCohesion(alpha) {
+        const centroids = {};
+        const counts = {};
+        for (const d of NODES) {
+          const tag = d.tags[0];
+          if (!centroids[tag]) {
+            centroids[tag] = { x: 0, y: 0 };
+            counts[tag] = 0;
+          }
+          centroids[tag].x += d.x;
+          centroids[tag].y += d.y;
+          counts[tag]++;
+        }
+        for (const tag in centroids) {
+          centroids[tag].x /= counts[tag];
+          centroids[tag].y /= counts[tag];
+        }
+        for (const d of NODES) {
+          const c = centroids[d.tags[0]];
+          d.vx += (c.x - d.x) * alpha * 0.08;
+          d.vy += (c.y - d.y) * alpha * 0.08;
+        }
+      }
+
+      const simulation = d3
+        .forceSimulation(NODES)
+        .force(
+          "link",
+          d3
+            .forceLink(links)
+            .id((d) => d.id)
+            .distance((d) => (d.cross ? 160 : 65))
+            .strength((d) => (d.cross ? 0.1 : 0.4) * (d.rating / 3)),
+        )
+        .force("charge", d3.forceManyBody().strength(-100))
+        .force("center", d3.forceCenter(W / 2, H / 2))
+        .force("collision", d3.forceCollide(26))
+        .force("bound", boundForce)
+        .force("cohesion", clusterCohesion);
+
+      const R = 9;
+      const pie = d3
+        .pie()
+        .sort(null)
+        .value(() => 1);
+      const arc = d3.arc().innerRadius(0).outerRadius(R);
+
+      const link = g
+        .append("g")
+        .selectAll("line")
+        .data(links)
+        .join("line")
+        .attr("class", "link")
+        .attr("stroke-width", (d) => d.rating * 0.5);
+
+      const tooltip = document.getElementById("tooltip");
+      const ttName = tooltip.querySelector(".name");
+      const ttTags = tooltip.querySelector(".tags");
+
+      const node = g
+        .append("g")
+        .selectAll("g")
+        .data(NODES)
+        .join("g")
+        .attr("class", "node")
+        .call(
+          d3
+            .drag()
+            .on("start", (e, d) => {
+              if (!e.active) simulation.alphaTarget(0.3).restart();
+              d.fx = d.x;
+              d.fy = d.y;
+            })
+            .on("drag", (e, d) => {
+              d.fx = e.x;
+              d.fy = e.y;
+            })
+            .on("end", (e, d) => {
+              if (!e.active) simulation.alphaTarget(0);
+              d.fx = null;
+              d.fy = null;
+            }),
+        )
+        .on("click", (e, d) => {
+          openModal(d.id, DEMOS[d.id]);
+        })
+        .on("mouseover", (e, d) => {
+          tooltip.style.display = "block";
+          ttName.textContent = d.id;
+          ttTags.innerHTML = d.tags
+            .map(
+              (t) =>
+                `<span class="tag" style="background:${TAG_COLORS[t]}">${t}</span>`,
+            )
+            .join("");
+        })
+        .on("mousemove", (e) => {
+          tooltip.style.left = e.clientX + 14 + "px";
+          tooltip.style.top = e.clientY - 10 + "px";
+        })
+        .on("mouseout", () => {
+          tooltip.style.display = "none";
+        });
+
+      node.each(function (d) {
+        d3.select(this)
+          .selectAll("path")
+          .data(pie(d.tags))
+          .join("path")
+          .attr("d", arc)
+          .attr("fill", (s) => TAG_COLORS[d.tags[s.index]])
+          .attr("stroke", "#1a1a1d")
+          .attr("stroke-width", 0.5);
+      });
+      node
+        .append("text")
+        .text((d) => d.id)
+        .attr("x", R + 4);
+
+      simulation.on("tick", () => {
+        link
+          .attr("x1", (d) => d.source.x)
+          .attr("y1", (d) => d.source.y)
+          .attr("x2", (d) => d.target.x)
+          .attr("y2", (d) => d.target.y);
+        node.attr("transform", (d) => `translate(${d.x},${d.y})`);
+      });
+
+      // Modal
+      const modal = document.getElementById("modal");
+      const demoFrame = document.getElementById("demo-frame");
+      const demoPlaceholder = document.getElementById("demo-placeholder");
+      const readmePane = document.getElementById("readme-panel");
+
+      document.getElementById("modal-close").onclick = () => {
+        modal.classList.remove("open");
+        demoFrame.src = "";
+      };
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) {
+          modal.classList.remove("open");
+          demoFrame.src = "";
+        }
+      });
+
+      async function openModal(id, demoUrl) {
+        demoFrame.src = demoUrl || "";
+        demoFrame.classList.toggle("hidden", !demoUrl);
+        demoPlaceholder.classList.toggle("visible", !demoUrl);
+        demoPlaceholder.innerHTML = demoUrl
+          ? ""
+          : `<a href="https://github.com/GalMunGral/${id}" target="_blank">github.com/GalMunGral/${id}</a>`;
+        readmePane.innerHTML = "<p style='color:#555'>Loading…</p>";
+        modal.classList.add("open");
+
+        const urls = [
+          `https://raw.githubusercontent.com/GalMunGral/${id}/main/README.md`,
+          `https://raw.githubusercontent.com/GalMunGral/${id}/master/README.md`,
+        ];
+        let md = null;
+        for (const url of urls) {
+          const r = await fetch(url);
+          if (r.ok) {
+            md = await r.text();
+            break;
+          }
+        }
+        if (!md) {
+          readmePane.innerHTML = "<p style='color:#555'>No README found.</p>";
+          return;
+        }
+
+        // GitHub inline math $`expr`$ → $expr$ so KaTeX can see it
+        md = md.replace(/\$`([^`]+)`\$/g, "$$$1$$");
+        readmePane.innerHTML = marked.parse(md);
+
+        // Render ```math fenced blocks (become <code class="language-math">)
+        readmePane.querySelectorAll("code.language-math").forEach((el) => {
+          const display = document.createElement("div");
+          try {
+            window.katex.render(el.textContent, display, {
+              displayMode: true,
+              throwOnError: false,
+            });
+          } catch (_) {
+            display.textContent = el.textContent;
+          }
+          el.closest("pre").replaceWith(display);
+        });
+
+        if (window.renderMathInElement) {
+          window.renderMathInElement(readmePane, {
+            delimiters: [
+              { left: "$$", right: "$$", display: true },
+              { left: "$", right: "$", display: false },
+            ],
+            throwOnError: false,
+          });
+        }
+      }
+
+      // Legend with tag filter
+      let activeTag = null;
+      const legend = document.getElementById("legend");
+      TAGS.forEach((tag) => {
+        const color = TAG_COLORS[tag];
+        const item = document.createElement("div");
+        item.className = "legend-item";
+        item.innerHTML = `<div class="legend-swatch" style="background:${color}"></div>${tag}`;
+        item.onclick = () => {
+          if (activeTag === tag) {
+            activeTag = null;
+            item.classList.remove("active");
+            node.style("opacity", 1);
+            link.style("opacity", 1);
+          } else {
+            activeTag = tag;
+            document
+              .querySelectorAll(".legend-item")
+              .forEach((el) => el.classList.remove("active"));
+            item.classList.add("active");
+            node.style("opacity", (d) => (d.tags.includes(tag) ? 1 : 0.07));
+            link.style("opacity", (d) =>
+              d.source.tags.includes(tag) && d.target.tags.includes(tag)
+                ? 1
+                : 0.03,
+            );
+          }
+        };
+        legend.appendChild(item);
+      });
+    </script>
+  </body>
 </html>
