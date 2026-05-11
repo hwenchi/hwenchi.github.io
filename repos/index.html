@@ -372,7 +372,7 @@
             .distance((d) => (d.cross ? 160 : 65))
             .strength((d) => (d.cross ? 0.1 : 0.4) * (d.rating / 3)),
         )
-        .force("charge", d3.forceManyBody().strength(-100))
+        .force("charge", d3.forceManyBody().strength(-250))
         .force("center", d3.forceCenter(W / 2, H / 2))
         .force("collision", d3.forceCollide(26))
         .force("bound", boundForce)
