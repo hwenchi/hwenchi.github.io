@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Critique of Research Software Engineering</title>
+    <link rel="stylesheet" href="/style.css" />
+</head>
+  <body style="max-width: 640px; margin: 2rem auto">
+    <h1>Critique of Research Software Engineering</h1>
+
+    <p>
+      We normally think of software as <i>instrumental</i>, its utility lying
+      entirely in the output it produces from the inputs. But software is also
+      an expressive medium: it can not only transform data but convey ideas and
+      advance arguments. We may call this type of software <i>rhetorical</i>.
+      Sometimes the output is the argument &mdash; a visualization makes a claim
+      about data or explains a phenomenon; a simulation validates a theory or
+      demonstrates a mechanism. But sometimes the running itself is the
+      argument: a prototype that executes convinces the observer, in a way no
+      description could, that the proposed system is technically feasible, and
+      that the underlying idea has practical merit. In both cases the primary
+      criterion is the effectiveness of the argument &mdash; reliability,
+      performance, etc. matter only insofar as they contribute to it. We could
+      further divide each category into <i>ephemeral</i> and <i>persistent</i>,
+      based on whether the need it serves is one-time or recurrent, giving us
+      four kinds of software:
+    </p>
+
+    <table style="border-collapse: collapse">
+      <tbody>
+        <tr>
+          <td style="border: 1px solid; padding: 0.4rem 0.6rem"></td>
+          <td style="border: 1px solid; padding: 0.4rem 0.6rem">
+            <i>Rhetorical</i>
+          </td>
+          <td style="border: 1px solid; padding: 0.4rem 0.6rem">
+            <i>Instrumental</i>
+          </td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid; padding: 0.4rem 0.6rem">
+            <i>Ephemeral</i>
+          </td>
+          <td style="border: 1px solid; padding: 0.4rem 0.6rem">
+            one-off scripts to produce figures, renderings, paper supplements
+          </td>
+          <td style="border: 1px solid; padding: 0.4rem 0.6rem">
+            migration scripts, data cleaning scripts, analysis pipelines,
+            simulation runs, reproducible research
+          </td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid; padding: 0.4rem 0.6rem">
+            <i>Persistent</i>
+          </td>
+          <td style="border: 1px solid; padding: 0.4rem 0.6rem">
+            research websites, teaching tools, live demos, interactive
+            visualizations, proof-of-concept systems
+          </td>
+          <td style="border: 1px solid; padding: 0.4rem 0.6rem">
+            shared libraries, data pipelines, user-facing platforms,
+            cyberinfrastructure
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      It is perhaps most helpful to think of this as an epistemological rather
+      than ontological framework &mdash; it describes how we can think of
+      software, not what software is in itself. As social relations shift over
+      time, so too do the categories we might assign to a piece of software; and
+      moreover, multiple categories can apply at the same time. A simulation run
+      in the course of research is ephemeral-instrumental; the same simulation,
+      used to generate figures for a paper, is also ephemeral-rhetorical. A
+      proof-of-concept system is persistent-rhetorical, but if people start to
+      incorporate it into their workflows, it becomes, simultaneously,
+      persistent-instrumental, and so on.
+    </p>
+
+    <p>
+      Having laid out this framework, we can now ask more precisely: what
+      exactly distinguishes &ldquo;research software engineering&rdquo; from
+      just &ldquo;software engineering&rdquo;? For whom do we create software
+      and to what end? As shown above, research software can fall into any of
+      these categories, however, the funding models of short-term projects and
+      grant cycles tend to favor the rhetorical and neglect the instrumental.
+    </p>
+
+    <p>
+      Let us zoom in to software of the rhetorical kind and see where the
+      tension lies. We conduct user research, create user interfaces, and design
+      user experiences for rhetorical software just as we do for instrumental
+      software. But who are these users, and what relation do we actually have
+      with them? As we defined above, when software is rhetorical, the relation
+      it serves is that of <i>author</i> and <i>audience</i>, and not
+      <i>producer</i> and <i>consumer</i>. The problem is, what the industry
+      means by &ldquo;user&rdquo; &mdash; and therefore what we mean by default,
+      having borrowed the vocabulary from that context &mdash; is not the sense
+      found in a dictionary. Rather, it refers to real socioeconomic
+      participants embedded in a producer-consumer relation. Rhetorical software
+      has no such consumers. What exists in its place is an audience: people we
+      are trying to <i>convince</i>, not necessarily <i>serve</i>. A reviewer
+      clicking a button is therefore only superficially the same action as a
+      user clicking a button. To conflate the two is a category error. It might
+      be worthwhile to always qualify the terms: &ldquo;<i>rhetorical</i> user
+      research,&rdquo; &ldquo;<i>rhetorical</i> user interface,&rdquo; and
+      &ldquo;<i>rhetorical</i> user experience&rdquo;, as opposed to &ldquo;<i
+        >instrumental</i
+      >
+      user research,&rdquo; &ldquo;<i>instrumental</i> user interface,&rdquo;
+      and &ldquo;<i>instrumental</i> user experience.&rdquo;
+    </p>
+
+    <p>
+      When we operate under a fundamental misunderstanding about whether a piece
+      of software primarily serves a producer-consumer or author-audience
+      relation, the consequences are felt concretely: we apply the wrong
+      processes and success criteria, and invest effort in the wrong places. We
+      over-engineer prototypes and under-engineer products. The result is
+      misaligned expectations, communication friction, frustration, and burnout.
+    </p>
+
+    <p>
+      So what do we do in the absence of a shared language for rhetorical
+      software? First, we need to establish consensus around the language
+      itself. It falls to us to educate our colleagues and collaborators. Then,
+      we must identify &mdash; and constantly recalibrate throughout the course
+      of a project &mdash; what kind of social relations we are participating in
+      at any given moment, and consequently, what kind of software we are
+      making. Is it primarily rhetorical or instrumental? Persistent or
+      ephemeral? How best to spend our efforts hinges on the answers to these
+      questions.
+    </p>
+
+    <p>
+      Once we&rsquo;ve recognized a piece of software as primarily rhetorical,
+      we should take on the role of a communicator who engages in
+      <i>computational rhetoric</i>. Instead of asking &ldquo;how do I implement
+      this feature?&rdquo; or &ldquo;how do I make this more reliable,
+      performant, secure, or user-friendly?&rdquo;, we should ask: is this
+      primarily argumentative or expository? What exactly is being claimed or
+      explained, and is it valid and honest? What do I already know or believe
+      about the subject, and what do I need to know before I could make my own
+      judgment? Who is the audience, what do they already know or believe, and
+      what do they need to know before they could make their own judgment? What
+      reasoning or evidence exists to support the argument or exposition, and
+      what is the best modality for each? E.g.:
+    </p>
+
+    <ul>
+      <li><i>Text</i>: e.g. prose, code, mathematical notation</li>
+      <li><i>Image</i>: e.g. photographs, diagrams, plots, still renderings</li>
+      <li><i>Audio</i>: e.g. narration, music, sound effects</li>
+      <li><i>Video</i>: e.g. camera footage, screen recording, animation</li>
+      <li>
+        <i>Interactive experience</i>: e.g. interactive visualizations, games,
+        applications
+      </li>
+    </ul>
+
+    <p>
+      Which of these can be produced and/or presented by software? And finally,
+      is running the software itself a necessary piece of evidence, and
+      moreover, is it sufficient?
+    </p>
+
+    <p>
+      These questions might look like the subject matter of an introductory
+      English or communications course taught in a humanities department at a
+      liberal arts college &mdash; which they are &mdash; and not of software
+      engineering, which is undoubtedly STEM, a hardcore STEM, even, which is
+      certainly not English of all things? So let us take a moment, step back,
+      and zoom in again.
+    </p>
+
+    <p>
+      The medieval tradition distinguished the
+      <i>artes mechanicae</i>, the mechanical arts of making, from the
+      <i>artes liberales</i>, the liberal arts of knowing. Engineering, in the
+      traditional sense, belongs to the former. However, the intellectual tools
+      it draws on, mathematics and physics, descend from the <i>quadrivium</i>,
+      the liberal arts of number, running from Euclid to Newton, then to Fourier
+      and Maxwell.
+    </p>
+
+    <p>
+      Software engineering sits uneasily in this tradition. Though a type of
+      engineering, its medium is not physical material but formal language and
+      formal logic, coming from the <i>trivium</i> &mdash; <i>grammatica</i>,
+      <i>dialectica</i>, and <i>rhetorica</i>, the liberal arts of language
+      &mdash; running from Aristotle to Frege (who cast these arts in
+      mathematical form), then to G&ouml;del and Turing. Numerical scientific
+      software, of course, still draws heavily on the same
+      <i>quadrivium</i>-descended applied mathematics that physical engineering
+      uses.
+    </p>
+
+    <p>
+      Regardless of the particular content of a piece of software &mdash;
+      whether it is an operating system, a database, a video game, or a
+      scientific visualization &mdash; its medium consists entirely of formal
+      constructs, in other words, <i>thought-material</i>. And about
+      thought-material we can always ask: what is its structure?
+      (<i>grammatica</i>) Is the structure valid? (<i>dialectica</i>) What
+      effect does the structure have on the mind? (<i>rhetorica</i>) &mdash; the
+      three arts of the <i>trivium</i>. The first two, in their modern form, are
+      familiar to us. What this essay offers, by situating our professional
+      practice in its social and historical relations, is nothing but a reminder
+      of the hidden third: <i>ars rhetorica</i>.
+    </p>
+  </body>
+</html>
