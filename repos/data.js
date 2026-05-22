@@ -19,6 +19,7 @@ export const DEMOS = {
   "visible-human-slicer": "https://galmungral.github.io/visible-human-slicer/",
   "visible-human-volume": "https://galmungral.github.io/visible-human-volume/",
   "shape-from-shading":   "https://galmungral.github.io/shape-from-shading/",
+  "gl-gaussian-splat":    "https://galmungral.github.io/gl-gaussian-splat/",
   "mol-renderer":         "https://galmungral.github.io/mol-renderer/",
   "conformer-viewer":     "https://galmungral.github.io/conformer-viewer/",
   "spectral-color":       "https://galmungral.github.io/spectral-color/",
@@ -55,6 +56,7 @@ export const NODES = [
   { id: "cpu-raytracer",            tags: ["3D Graphics"] },
   { id: "gl-raytracer",             tags: ["3D Graphics", "GPU"] },
   { id: "3d-rasterizer",            tags: ["3D Graphics"] },
+  { id: "gl-gaussian-splat",        tags: ["3D Graphics", "GPU"] },
   { id: "gl-fdm-2d",                tags: ["Simulation", "GPU", "Visualization"] },
   { id: "gl-fdm-3d",                tags: ["Simulation", "3D Graphics", "GPU", "Visualization"] },
   { id: "wasm-particle-sim",        tags: ["Simulation", "Visualization"] },
@@ -113,6 +115,11 @@ export const CONNECTIONS = [
   ["3d-rasterizer",        "conformer-viewer"],
   ["3d-rasterizer",        "tidal-sphere"],
   ["3d-rasterizer",        "scivis-primer"],
+
+  // Gaussian splatting
+  ["gl-raytracer",         "gl-gaussian-splat"],
+  ["3d-rasterizer",        "gl-gaussian-splat"],
+  ["gpu-patterns",         "gl-gaussian-splat"],
 
   // GPU / raytracer
   ["newton-vg",            "gl-raytracer"],
