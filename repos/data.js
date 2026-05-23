@@ -20,6 +20,7 @@ export const DEMOS = {
   "visible-human-volume": "https://galmungral.github.io/visible-human-volume/",
   "shape-from-shading":   "https://galmungral.github.io/shape-from-shading/",
   "gl-gaussian-splat":    "https://galmungral.github.io/gl-gaussian-splat/",
+  "image-generation-notebooks": "https://galmungral.github.io/image-generation-notebooks/",
   "mol-renderer":         "https://galmungral.github.io/mol-renderer/",
   "conformer-viewer":     "https://galmungral.github.io/conformer-viewer/",
   "spectral-color":       "https://galmungral.github.io/spectral-color/",
@@ -84,6 +85,7 @@ export const NODES = [
   { id: "universal-turing-machine", tags: ["CS Foundations"] },
   { id: "kanbun-lang",              tags: ["UI"] },
   { id: "plato",                    tags: ["Statistical & ML"] },
+  { id: "image-generation-notebooks", tags: ["Statistical & ML", "Computer Vision"] },
   { id: "tidal-sphere",             tags: ["Simulation", "3D Graphics"] },
   { id: "macrobook",                tags: ["CS Foundations"] },
   { id: "telescope",                tags: ["Networking"] },
@@ -168,7 +170,6 @@ export const CONNECTIONS = [
 
   // Computer Vision / Math
   ["shape-from-shading",   "qft-viz"],
-  ["shape-from-shading",   "backprop"],
 
   // CS Foundations
   ["universal-turing-machine", "tinyvm"],
@@ -179,4 +180,6 @@ export const CONNECTIONS = [
   // Networking
   ["telescope",            "wormhole"],
   ["plato",                "backprop"],
+  ["plato",                "image-generation-notebooks"],
+  ["backprop",             "image-generation-notebooks"],
 ];
