@@ -182,4 +182,8 @@ export const CONNECTIONS = [
   ["plato",                "backprop"],
   ["plato",                "image-generation-notebooks"],
   ["backprop",             "image-generation-notebooks"],
+  ["vector-rendering",     "image-generation-notebooks"],
+  ["cpu-raytracer",        "image-generation-notebooks"],
+  ["gl-gaussian-splat",    "image-generation-notebooks"],
+  ["3d-rasterizer",        "image-generation-notebooks"],
 ];
