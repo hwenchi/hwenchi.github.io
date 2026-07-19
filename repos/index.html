@@ -456,13 +456,13 @@
         demoPlaceholder.classList.toggle("visible", !demoUrl);
         demoPlaceholder.innerHTML = demoUrl
           ? ""
-          : `<a href="https://github.com/GalMunGral/${id}" target="_blank">github.com/GalMunGral/${id}</a>`;
+          : `<a href="https://github.com/hwenchi/${id}" target="_blank">github.com/hwenchi/${id}</a>`;
         readmePane.innerHTML = "<p style='color:#555'>Loading…</p>";
         modal.classList.add("open");
 
         const urls = [
-          `https://raw.githubusercontent.com/GalMunGral/${id}/main/README.md`,
-          `https://raw.githubusercontent.com/GalMunGral/${id}/master/README.md`,
+          `https://raw.githubusercontent.com/hwenchi/${id}/main/README.md`,
+          `https://raw.githubusercontent.com/hwenchi/${id}/master/README.md`,
         ];
         let md = null;
         for (const url of urls) {
