@@ -7,7 +7,9 @@
     <link rel="stylesheet" href="/style.css" />
 </head>
   <body style="max-width: 640px; margin: 2rem auto">
-    <h1>Critique of Research Software Engineering</h1>
+    <h1>Critique of Research Software Engineering<br /><span lang="zh">对研究型软件工程的批判</span></h1>
+
+    <p><small><em>The Chinese translation below is produced entirely by Claude (Anthropic) and has not been reviewed word-for-word by the author.<br /><span lang="zh">以下中文翻译完全由 Claude（Anthropic）完成，未经作者逐字校对。</span></em></small></p>
 
     <p>
       We normally think of software as <i>instrumental</i>, its utility lying
@@ -27,40 +29,48 @@
       four kinds of software:
     </p>
 
+    <p lang="zh">
+      我们通常认为软件是工具性的，其效用完全体现在它根据输入产生的输出上。但软件也是一种表达媒介：它不仅能够转换数据，还能够传达思想、推进论证。我们可以把这类软件称为修辞性的。有时输出本身就是论证：一次可视化对数据提出某种主张，或解释某种现象；一次仿真验证了某个理论，或演示了某种机制。但有时运行这一行为本身就是论证：一个能够运行的原型，以任何描述都无法企及的方式，让观察者相信所提议的系统在技术上是可行的，其背后的想法具有实际价值。在这两种情形下，首要的评判标准都是论证的有效性，可靠性、性能等只有在有助于这一效果时才重要。我们还可以根据软件所服务的需求是一次性的还是反复出现的，将每一类进一步划分为短暂性的和持久性的，由此得到四类软件：
+    </p>
+
     <table style="border-collapse: collapse">
       <tbody>
         <tr>
           <td style="border: 1px solid; padding: 0.4rem 0.6rem"></td>
           <td style="border: 1px solid; padding: 0.4rem 0.6rem">
-            <i>Rhetorical</i>
+            <i>Rhetorical</i><br /><i lang="zh">修辞性</i>
           </td>
           <td style="border: 1px solid; padding: 0.4rem 0.6rem">
-            <i>Instrumental</i>
+            <i>Instrumental</i><br /><i lang="zh">工具性</i>
           </td>
         </tr>
         <tr>
           <td style="border: 1px solid; padding: 0.4rem 0.6rem">
-            <i>Ephemeral</i>
+            <i>Ephemeral</i><br /><i lang="zh">短暂性</i>
           </td>
           <td style="border: 1px solid; padding: 0.4rem 0.6rem">
             one-off scripts to produce figures, renderings, paper supplements
+            <br /><span lang="zh">用于生成图表、渲染图像、论文附录的一次性脚本</span>
           </td>
           <td style="border: 1px solid; padding: 0.4rem 0.6rem">
             migration scripts, data cleaning scripts, analysis pipelines,
             simulation runs, reproducible research
+            <br /><span lang="zh">迁移脚本、数据清洗脚本、分析流水线、仿真运行、可复现研究</span>
           </td>
         </tr>
         <tr>
           <td style="border: 1px solid; padding: 0.4rem 0.6rem">
-            <i>Persistent</i>
+            <i>Persistent</i><br /><i lang="zh">持久性</i>
           </td>
           <td style="border: 1px solid; padding: 0.4rem 0.6rem">
             research websites, teaching tools, live demos, interactive
             visualizations, proof-of-concept systems
+            <br /><span lang="zh">研究网站、教学工具、现场演示、交互式可视化、概念验证系统</span>
           </td>
           <td style="border: 1px solid; padding: 0.4rem 0.6rem">
             shared libraries, data pipelines, user-facing platforms,
             cyberinfrastructure
+            <br /><span lang="zh">共享库、数据流水线、面向用户的平台、网络基础设施</span>
           </td>
         </tr>
       </tbody>
@@ -79,6 +89,10 @@
       persistent-instrumental, and so on.
     </p>
 
+    <p lang="zh">
+      也许最有帮助的理解方式，是把这看作一种认识论框架，而非本体论框架：它描述的是我们可以如何看待软件，而不是软件本身是什么。随着社会关系随时间演变，我们赋予某个软件的类别也会随之改变；而且，多个类别完全可以同时适用于同一软件。研究过程中运行的一次仿真是短暂工具性的；同一次仿真若被用来为论文生成图表，则同时也是短暂修辞性的。一个概念验证系统是持久修辞性的，但如果人们开始把它纳入日常工作流程，它便同时也成为持久工具性的，如此等等。
+    </p>
+
     <p>
       Having laid out this framework, we can now ask more precisely: what
       exactly distinguishes &ldquo;research software engineering&rdquo; from
@@ -86,6 +100,10 @@
       and to what end? As shown above, research software can fall into any of
       these categories, however, the funding models of short-term projects and
       grant cycles tend to favor the rhetorical and neglect the instrumental.
+    </p>
+
+    <p lang="zh">
+      在提出这一框架之后，我们便可以更加精确地追问：究竟是什么把"研究型软件工程"与单纯的"软件工程"区分开来？我们究竟是为谁而开发软件，又是为了什么目的？如上所述，研究软件可以落入这四个类别中的任何一个，然而，短期项目与经费周期所塑造的资助模式，往往偏向修辞性的一端，而忽视工具性的一端。
     </p>
 
     <p>
@@ -113,6 +131,10 @@
       and &ldquo;<i>instrumental</i> user experience.&rdquo;
     </p>
 
+    <p lang="zh">
+      让我们把目光聚焦到修辞性软件上，看看张力究竟出现在哪里。对于修辞性软件，我们同样会开展用户研究、设计用户界面、打造用户体验，就像对待工具性软件一样。但这些"用户"究竟是谁，我们与他们之间实际上是什么关系？正如前文所定义的，当软件是修辞性的，它所服务的关系是<i>作者</i>与<i>受众</i>之间的关系，而不是<i>生产者</i>与<i>消费者</i>之间的关系。问题在于，业界所说的"用户"，以及我们从这一语境中借用词汇后默认所指的"用户"，并不是词典意义上的用户，而是嵌入在生产者与消费者关系中的真实社会经济参与者。修辞性软件并不存在这样的消费者，取而代之的是受众：我们试图去<i>说服</i>的人，而不一定是我们要去<i>服务</i>的人。因此，评审者点击一个按钮，与用户点击一个按钮，二者只是表面上相同的动作。将两者混为一谈，是一种范畴错误。或许值得始终对这些术语加以限定："<i>修辞性</i>用户研究"、"<i>修辞性</i>用户界面"、"<i>修辞性</i>用户体验"，以区别于"<i>工具性</i>用户研究"、"<i>工具性</i>用户界面"、"<i>工具性</i>用户体验"。
+    </p>
+
     <p>
       When we operate under a fundamental misunderstanding about whether a piece
       of software primarily serves a producer-consumer or author-audience
@@ -120,6 +142,10 @@
       processes and success criteria, and invest effort in the wrong places. We
       over-engineer prototypes and under-engineer products. The result is
       misaligned expectations, communication friction, frustration, and burnout.
+    </p>
+
+    <p lang="zh">
+      当我们从根本上误判一个软件究竟主要服务于生产者与消费者的关系，还是作者与受众的关系时，后果是十分具体的：我们会套用错误的流程与成功标准，把精力投入到错误的地方。我们会对原型过度工程化，却对产品工程化不足。其结果便是预期错位、沟通摩擦、挫败感与职业倦怠。
     </p>
 
     <p>
@@ -132,6 +158,10 @@
       making. Is it primarily rhetorical or instrumental? Persistent or
       ephemeral? How best to spend our efforts hinges on the answers to these
       questions.
+    </p>
+
+    <p lang="zh">
+      那么，在缺乏一套关于修辞性软件的共同语言的情况下，我们该怎么办？首先，我们需要就这套语言本身建立共识，教育同事与合作者的责任也就落在了我们自己身上。其次，我们必须在项目推进的每一个阶段，不断辨识，并持续校准，我们此刻正参与的是哪一种社会关系，进而明确我们正在制作的是哪一种软件：它主要是修辞性的还是工具性的？是持久性的还是短暂性的？我们的精力应当如何分配，取决于这些问题的答案。
     </p>
 
     <p>
@@ -149,14 +179,31 @@
       what is the best modality for each? E.g.:
     </p>
 
+    <p lang="zh">
+      一旦我们确认某个软件主要是修辞性的，我们就应当扮演起从事<i>计算修辞</i>的传播者这一角色。与其问"我该如何实现这个功能？"或"我该如何让它更可靠、更高效、更安全、更易用？"，我们更应该问：这究竟是论证性的还是说明性的？它究竟在主张什么或解释什么，这一主张或解释是否站得住脚、是否诚实？关于这个主题，我自己已经知道或相信什么，在做出自己的判断之前，我还需要知道什么？受众是谁，他们已经知道或相信什么，在做出自己的判断之前，他们还需要知道什么？有哪些推理或证据可以支撑这一论证或说明，对每一种而言，最合适的呈现方式又是什么？例如：
+    </p>
+
     <ul>
-      <li><i>Text</i>: e.g. prose, code, mathematical notation</li>
-      <li><i>Image</i>: e.g. photographs, diagrams, plots, still renderings</li>
-      <li><i>Audio</i>: e.g. narration, music, sound effects</li>
-      <li><i>Video</i>: e.g. camera footage, screen recording, animation</li>
+      <li>
+        <i>Text</i>: e.g. prose, code, mathematical notation
+        <br /><span lang="zh"><i>文字</i>：如散文、代码、数学符号</span>
+      </li>
+      <li>
+        <i>Image</i>: e.g. photographs, diagrams, plots, still renderings
+        <br /><span lang="zh"><i>图像</i>：如照片、图表、绘图、静态渲染图</span>
+      </li>
+      <li>
+        <i>Audio</i>: e.g. narration, music, sound effects
+        <br /><span lang="zh"><i>音频</i>：如旁白、音乐、音效</span>
+      </li>
+      <li>
+        <i>Video</i>: e.g. camera footage, screen recording, animation
+        <br /><span lang="zh"><i>视频</i>：如实拍影像、屏幕录制、动画</span>
+      </li>
       <li>
         <i>Interactive experience</i>: e.g. interactive visualizations, games,
         applications
+        <br /><span lang="zh"><i>交互体验</i>：如交互式可视化、游戏、应用程序</span>
       </li>
     </ul>
 
@@ -164,6 +211,10 @@
       Which of these can be produced and/or presented by software? And finally,
       is running the software itself a necessary piece of evidence, and
       moreover, is it sufficient?
+    </p>
+
+    <p lang="zh">
+      在上述这些方式中，哪些是软件可以生成和／或呈现的？最后，运行软件这一行为本身，是不是一项必要的证据？更进一步说，它是否已经足够？
     </p>
 
     <p>
@@ -175,6 +226,10 @@
       and zoom in again.
     </p>
 
+    <p lang="zh">
+      这些问题看起来更像是文理学院人文学科开设的英语写作或传播学入门课程的内容，事实也的确如此，而不像是软件工程的内容。软件工程无疑属于STEM学科，甚至可以说是硬核的STEM，怎么可能和英语这门学科扯上关系呢？那么，让我们暂停片刻，退后一步，再重新聚焦。
+    </p>
+
     <p>
       The medieval tradition distinguished the
       <i>artes mechanicae</i>, the mechanical arts of making, from the
@@ -183,6 +238,10 @@
       it draws on, mathematics and physics, descend from the <i>quadrivium</i>,
       the liberal arts of number, running from Euclid to Newton, then to Fourier
       and Maxwell.
+    </p>
+
+    <p lang="zh">
+      中世纪的传统把<i>机械技艺</i>（artes mechanicae），即制作的技艺，与<i>自由技艺</i>（artes liberales），即认知的技艺，区分开来。传统意义上的工程学属于前者。然而，它所依赖的智识工具，也就是数学与物理学，却源自<i>四艺</i>（quadrivium），即数的自由技艺，其脉络从欧几里得延伸到牛顿，再延伸到傅里叶与麦克斯韦。
     </p>
 
     <p>
@@ -197,6 +256,10 @@
       uses.
     </p>
 
+    <p lang="zh">
+      软件工程在这一传统中处境尴尬。它虽然是一种工程学，媒介却不是物理材料，而是形式语言与形式逻辑，这源自<i>三艺</i>（trivium）：<i>文法</i>（grammatica）、<i>辩证法</i>（dialectica）与<i>修辞学</i>（rhetorica），也就是语言的自由技艺，其脉络从亚里士多德延伸到弗雷格（他把这些技艺改造成了数学的形式），再延伸到哥德尔与图灵。当然，数值型的科学软件仍然大量依赖同一支源自四艺的应用数学，这与物理工程所依赖的是同一套体系。
+    </p>
+
     <p>
       Regardless of the particular content of a piece of software &mdash;
       whether it is an operating system, a database, a video game, or a
@@ -209,6 +272,10 @@
       familiar to us. What this essay offers, by situating our professional
       practice in its social and historical relations, is nothing but a reminder
       of the hidden third: <i>ars rhetorica</i>.
+    </p>
+
+    <p lang="zh">
+      无论一个软件的具体内容是什么，无论它是操作系统、数据库、电子游戏，还是科学可视化，它的媒介都完全由形式构造组成，换句话说，都是<i>思想材料</i>。而关于思想材料，我们总是可以追问：它的结构是什么？（文法）这一结构是否有效？（辩证法）这一结构会对人的心智产生什么效果？（修辞学）这正是三艺所对应的三门技艺。前两门以其现代形式为我们所熟知。本文所做的，是把我们的专业实践放回其社会与历史关系之中，由此提醒我们不要遗忘那隐而不显的第三门技艺：<i>修辞学之艺</i>（ars rhetorica）。
     </p>
   </body>
 </html>

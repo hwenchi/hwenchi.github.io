@@ -18,8 +18,13 @@ a:hover {
   text-decoration: underline;
 }
 
-:lang(zh) {
+[lang="zh"] {
+  font-family: 'Noto Serif SC', 'EB Garamond', Georgia, serif;
   font-size: 0.82em;
+}
+
+[lang="zh"] [lang="zh"] {
+  font-size: 1em;
 }
 
 .sponsor {
