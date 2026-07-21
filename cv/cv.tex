@@ -1,0 +1,93 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[margin=1in,top=0.85in,bottom=0.85in]{geometry}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{lmodern}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  urlcolor=blue,
+  citecolor=black
+}
+
+\titleformat{\section}{\large\bfseries}{}{0em}{}[\titlerule]
+\titlespacing{\section}{0pt}{10pt}{5pt}
+
+\newcommand{\heading}[2]{%
+  \textbf{#1} \hfill #2\\[2pt]
+}
+
+\newcommand{\subheading}[2]{%
+  \textit{#1} \hfill \textit{#2}\\
+}
+
+\setlength{\parindent}{0pt}
+\pagestyle{empty}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE \textbf{Wenqi He}}\\[4pt]
+  \href{mailto:wenqihe2@illinois.edu}{wenqihe2@illinois.edu}
+\end{center}
+
+\section*{Employment}
+
+\heading{National Center for Supercomputing Applications (NCSA), UIUC}{}
+\subheading{Research Software Engineer, Visual Analytics}{2024 -- Present}
+\subheading{Graduate Research Assistant}{2022 -- 2023}
+
+\begin{itemize}[leftmargin=*, itemsep=3pt, topsep=0pt, partopsep=0pt]
+  \item \textbf{Simple NetInt} (\textit{Illinois Computes}) --- Interactive multi-layer 3D variable-scale map in WebGL for environmental, epidemiological, and economic data for the Brazilian Amazon. Implemented real-time non-linear geospatial feature transformations in GLSL shaders with GPU-based hit detection via asynchronous PBO readback and CPU-based raycasting.
+  \item \textbf{WormFindr} (\textit{NIH WormAtlas}) --- WebGL-based visualisation tool for the \textit{C. elegans} neuroanatomy atlas, supporting 2D and 3D exploration of volumetric electron microscopy tissue segmentations. Built a 2D slice viewer using GPU textures as lookup tables for segment ID--colour mapping, and a 3D surface mesh viewer with volumetric path tracing in shaders.
+  \item \textbf{Climate-Health Explorer} (\textit{Illinois Department of Public Health}) --- Interactive maps and statistical visualisations of gridded climate data and syndromic surveillance data.
+  \item \textbf{Oceans 1876} (\textit{Andrew Carnegie Fellowship}) --- Interactive map visualisation of HMS Challenger expedition data (1872--76), providing a pre-industrial baseline for oceanographic research.
+  \item \textbf{Direct Air Capture Hub} (\textit{US Department of Energy}) --- Geospatial dataset viewer with temporal support using GeoServer WMS and WFS.
+  \item \textbf{Transportation Review for Ecological Compliance} (\textit{Illinois Department of Transportation}) --- Form application with complex reactive logic and geospatial processing using PostGIS and GeoPandas.
+  \item \textbf{Cloud Biofoundry} (\textit{NSF iBioFoundry}) --- Web-based cyberinfrastructure providing remote access to the iBioFoundry facility, exposing a multi-agentic AI system for automated experiment design and Thermo Fisher Momentum software for robotic instrument control.
+  \item \textbf{Digital Molecule Maker} (\textit{NSF Molecule Maker Lab Institute}) --- Educational platform for building-block-based chemical synthesis, developed as part of the NSF Molecule Maker Lab Institute curriculum initiative (see Publications).
+\end{itemize}
+
+\vspace{12pt}
+\heading{Gllue Software, Shanghai}{}
+\subheading{Software Engineer, Applicant Tracking System}{2020 -- 2021}
+\begin{itemize}[leftmargin=*, itemsep=2pt, topsep=0pt, partopsep=0pt]
+  \item Developed and maintained a drag-and-drop UI builder powering an applicant tracking system used by HR departments at Baidu, Tencent, L'Or\'eal, and others; contributed to an identity broker for a single sign-on platform.
+\end{itemize}
+
+\vspace{12pt}
+\heading{\'Etude (JADE Technologies), Atlanta}{}
+\subheading{Volunteer Software Developer}{2020}
+\begin{itemize}[leftmargin=*, itemsep=2pt, topsep=0pt, partopsep=0pt]
+  \item Contributed to \'Etude, an Electron-based NLP-powered PDF reader with smart highlighting and semantic search, developed as a YC applicant startup by Georgia Tech students.
+\end{itemize}
+
+\section*{Education}
+
+\heading{University of Illinois Urbana-Champaign}{}
+\subheading{Master of Computer Science}{2022 -- 2023}
+
+\medskip
+\heading{Georgia Institute of Technology}{}
+\subheading{Bachelor of Science in Computer Science, Minor in Physics}{2015 -- 2019}
+
+\section*{Publications \& Technical Reports}
+
+\begin{itemize}[leftmargin=*, itemsep=6pt, topsep=4pt]
+  \item Green, N.\,M., Hammond, R.\,I., Planey, J., Angello, N.\,H., Putnam, J.\,L.\,B., Berry, M., He, W., Chen, E., Nu\~nez-Corrales, S., Loving, D.\,C., Wang, W., Huang, T., Gunasekera, B., Marville, K., Switzky, R., Desmond, S., \& Burke, M.\,D. \textit{Illuminating the Interface of Blocc Chemistry and Data Science: Maximizing Function with ML-Guided Discovery and a Digital Molecule Maker.} \textit{Journal of Chemical Education}, 103(2), 976--985, 2026. \href{https://doi.org/10.1021/acs.jchemed.5c00795}{doi:10.1021/acs.jchemed.5c00795}
+
+  \item He, W. \textit{Exploring Color Spaces in the Context of Chemistry Education.} CS 597 Individual Study Report, University of Illinois Urbana-Champaign, 2023. \href{https://zenodo.org/records/10367788}{doi:10.5281/zenodo.10367788}
+\end{itemize}
+
+\section*{Relevant Coursework}
+
+\textbf{Computer Science:} Scientific Visualisation, Introduction to Quantum Computing, Computer Simulation, Interactive Computer Graphics, Computational Photography, Applied Parallel Programming, Distributed Algorithms, Natural Language Processing, Advanced Information Retrieval, Introduction to Database Systems, Compiler Construction, Programming Languages \& Compilers, Design and Analysis of Algorithms, Computer Systems and Networks, Computer Networking, Introduction to Information Security
+
+\textbf{Mathematics:} Abstract Algebra, Real Variables, Differential Geometry, Partial Differential Equations, Numerical Analysis, Applied Combinatorics
+
+\textbf{Physics:} Gravity, Quantum Mechanics, Classical Mechanics, Electrostatics and Magnetostatics, Thermodynamics
+
+\end{document}
