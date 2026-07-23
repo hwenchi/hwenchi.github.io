@@ -3,6 +3,7 @@
 body {
   font-family: 'EB Garamond', Georgia, 'Noto Serif SC', serif;
   font-size: 20px;
+  line-height: 1.3;
 }
 
 code, pre, kbd {
@@ -19,12 +20,36 @@ a:hover {
 }
 
 [lang="zh"] {
-  font-family: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif SC', 'EB Garamond', Georgia, serif;
-  font-size: 0.82em;
+  font-family: 'Kaiti SC', 'STKaiti', 'KaiTi', 'Songti SC', 'STSong', 'SimSun', 'Noto Serif SC', 'EB Garamond', Georgia, serif;
+  font-size: 0.85em;
 }
 
-[lang="zh"] [lang="zh"] {
-  font-size: 1em;
+.home [lang="zh"] {
+  font-family: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif SC', 'EB Garamond', Georgia, serif;
+}
+
+body:not(.home) [lang="zh"] {
+  font-size: 1.05em;
+}
+
+.home h1, .home h2, .home h3 {
+  line-height: 1.25;
+}
+
+.home h3 {
+  margin: 0.6em 0 0.2em;
+}
+
+.home h3[lang="zh"] {
+  margin: 0 0 0.6em;
+}
+
+.home p {
+  margin: 0.2em 0;
+}
+
+.home p.entry {
+  margin-top: 1em;
 }
 
 .sponsor {
