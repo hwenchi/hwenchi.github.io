@@ -230,6 +230,7 @@ body.writing-index {
 .essay-card-preface {
   flex: 0 0 auto;
   direction: ltr;
+  margin-left: 5rem;
 }
 
 .preface-scroll {
