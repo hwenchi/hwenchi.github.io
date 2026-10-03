@@ -217,19 +217,11 @@ body.writing-index {
 }
 
 .essay-card {
-  flex: 0 0 min(860px, 92vw);
+  flex: 0 0 min(720px, 92vw);
   height: 100%;
   /* "end" is the left edge here, since the viewer is right-to-left: each
      essay snaps flush against the menu. */
   scroll-snap-align: end;
-  opacity: 0.35;
-  filter: grayscale(1);
-  transition: opacity 0.3s, filter 0.3s;
-}
-
-.essay-card.active {
-  opacity: 1;
-  filter: none;
 }
 
 /* The preface is inline rather than in an iframe, so its vertical text
