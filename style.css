@@ -1,9 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Noto+Serif+SC:wght@400;600&family=Noto+Serif+TC:wght@400;600&family=Courier+Prime:wght@400;700&display=swap');
-/* Kaiti SC / STKaiti / KaiTi are macOS-only system fonts; LXGW WenKai is an
-   open-source Kaiti-style webfont used as a fallback so the cursive look
-   still renders on Windows/Linux and other machines without those fonts. */
-@import url('https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/lxgwwenkai-regular.css');
-@import url('https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/lxgwwenkai-bold.css');
 
 body {
   font-family: 'EB Garamond', Georgia, 'Noto Serif SC', serif;
@@ -25,7 +20,7 @@ a:hover {
 }
 
 [lang="zh"] {
-  font-family: 'LXGW WenKai', 'Kaiti SC', 'STKaiti', 'KaiTi', 'Songti SC', 'STSong', 'SimSun', 'Noto Serif SC', 'EB Garamond', Georgia, serif;
+  font-family: 'Noto Serif TC', 'Noto Serif SC', 'Songti SC', 'STSong', 'SimSun', 'EB Garamond', Georgia, serif;
   font-size: 0.85em;
 }
 
@@ -62,7 +57,7 @@ a:hover {
 }
 
 body:not(.home) [lang="zh"] {
-  font-size: 0.95em;
+  font-size: 0.9em;
 }
 
 .home h1, .home h2, .home h3 {
@@ -227,8 +222,65 @@ body.writing-index {
   scroll-snap-align: center;
 }
 
+/* The preface is inline rather than in an iframe, so its vertical text
+   takes the reader's height and its columns set the card's width. Vertical,
+   right-to-left and unpunctuated, as a pre-Qin bamboo-slip text would be. */
 .essay-card-preface {
-  flex-basis: min(520px, 78vw);
+  flex: 0 0 auto;
+  direction: ltr;
+}
+
+.preface-scroll {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  height: 100%;
+  padding: 2rem 1.25rem;
+  box-sizing: border-box;
+  font-family: 'Noto Serif TC', 'Noto Serif SC', 'Songti SC', 'STSong', 'SimSun', serif;
+}
+
+.preface-scroll h1 {
+  font-size: 1.4em;
+  font-weight: 600;
+  margin: 0 0.8rem 0 0;
+  letter-spacing: 0.2em;
+}
+
+.preface-scroll p {
+  font-size: 1.05em;
+  line-height: 1.9;
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+
+/* 句讀 marks, styled after the vermilion (硃筆) punctuation a teacher or
+   commentator would add to an unpunctuated text: a filled dot for 句
+   (sentence end) and a hollow dot for 讀 (clause pause), sitting at the
+   character's corner rather than taking up a character-width of their
+   own. */
+.preface-scroll .ju,
+.preface-scroll .dou {
+  position: relative;
+}
+
+.preface-scroll .ju::after,
+.preface-scroll .dou::after {
+  content: "";
+  position: absolute;
+  right: -0.1em;
+  bottom: 0.05em;
+  width: 0.3em;
+  height: 0.3em;
+  border-radius: 50%;
+}
+
+.preface-scroll .ju::after {
+  background: #b23a2f;
+}
+
+.preface-scroll .dou::after {
+  background: transparent;
+  border: 1px solid #b23a2f;
 }
 
 .essay-card iframe {

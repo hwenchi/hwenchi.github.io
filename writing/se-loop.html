@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Software Engineering Loop</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+    <style>.katex { font-size: 1em; }</style>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        renderMathInElement(document.body, {
+          delimiters: [{ left: "$", right: "$", display: false }],
+        });
+      });
+    </script>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+
+  <body class="essay">
+    <h1>
+      The Software Engineering Loop<br />
+      <span lang="zh">軟件工程循環</span>
+    </h1>
+
+    <h2>Overview<br /><span lang="zh">概述</span></h2>
+
+    <p>
+      This essay models software engineering in the language of mathematical
+      logic. The specification is a theory: a satisfiable set of sentences
+      about how the software should behave. Part I defines programs,
+      the specification, and how the specification changes. Part II relates
+      tests to it, classifies new information, and combines everything into the
+      software engineering loop (section 5).
+    </p>
+
+    <p lang="zh">
+      本文用數理邏輯的語言為軟件工程建模。規約是一個理論，即一組描述軟件應當如何運行、且可滿足的語句。第一部分定義程序、規約以及規約的變化方式。第二部分將測試同規約聯繫起來，對新信息加以分類，最後把這些內容整合為軟件工程循環（第 5 節）。
+    </p>
+
+    <p>
+      The specification is never final, so the loop never terminates. Because
+      each step is precisely defined, the loop can serve as a standard
+      procedure instead of an ad hoc practice, and can therefore be automated.
+      We hope this will produce better software.
+    </p>
+
+    <p lang="zh">
+      規約永遠不會定稿，因此這個循環永不終止。由於每一步都有精確的定義，這一循環可以成為標準流程，而不只是臨時性的做法，也因此可以自動化。我們希望藉此做出更好的軟件。
+    </p>
+
+    <h2>Part I: Model<br /><span lang="zh">第一部分：模型</span></h2>
+
+    <h3>0. Programs and specifications<br /><span lang="zh">0. 程序與規約</span></h3>
+
+    <p>
+      <strong>Definition 0.0 (Sentence).</strong> A sentence is a statement
+      about the software&rsquo;s behavior. Logically equivalent sentences are
+      distinct.
+    </p>
+
+    <p lang="zh">
+      <strong>定義 0.0（語句）</strong>　語句是關於軟件行為的陳述。邏輯上等價的語句是不同的語句。
+    </p>
+
+    <p>
+      <strong>Convention 0.1 (Witnesses).</strong> Every existential quantifier
+      is replaced by a chosen witness, which strengthens the sentence:
+      &ldquo;the user named admin&rdquo; for &ldquo;some admin user,&rdquo;
+      &ldquo;within 5 seconds&rdquo; for &ldquo;eventually.&rdquo; Inside a
+      universal quantifier, the witness may depend on the bound variable, as a
+      Skolem function does.
+    </p>
+
+    <p lang="zh">
+      <strong>約定 0.1（見證）</strong>　每個存在量詞都替換為一個選定的見證，這會使語句變強：例如用“名為 admin 的用戶”代替“某個管理員用戶”，用“5 秒內”代替“最終”。在全稱量詞的轄域內，見證可以依賴於約束變量，如同 Skolem 函數。
+    </p>
+
+    <p>
+      <strong>Definition 0.2 (Domain).</strong> Every sentence thus has the
+      form $\forall x \in D.\ P(x)$, and $D$ is its <em>domain</em>. A sentence
+      about a single object has a singleton domain. Every domain is finite.
+    </p>
+
+    <p lang="zh">
+      <strong>定義 0.2（論域）</strong>　因此，每個語句都具有 $\forall x \in D.\ P(x)$ 的形式，其中 $D$ 稱為該語句的<em>論域</em>。關於單個對象的語句，其論域是單元素集。所有論域都是有限的。
+    </p>
+
+    <p>
+      <strong>Convention 0.3 (Time).</strong> A sentence holds at all times
+      unless it states a time bound (Pnueli 1977).
+    </p>
+
+    <p lang="zh">
+      <strong>約定 0.3（時間）</strong>　除非語句給出了時間界限，否則它在任何時刻都成立（Pnueli 1977）。
+    </p>
+
+    <p>
+      <strong>Definition 0.4 (Program).</strong> A program is identified with
+      its set of execution traces, which contains at least one trace for every
+      input.
+    </p>
+
+    <p lang="zh">
+      <strong>定義 0.4（程序）</strong>　程序等同於其執行軌跡的集合，並且對每一個輸入，該集合至少包含一條軌跡。
+    </p>
+
+    <p>
+      <strong>Definition 0.5 (Satisfaction).</strong> A sentence is a property
+      of programs, and a program satisfies it if the program has that property.
+      Most sentences concern single executions and are satisfied when they
+      hold on every trace; others, such as determinism or noninterference,
+      compare executions (Clarkson and Schneider 2010). A program satisfies a
+      set of sentences if it satisfies each of them. The set is
+      <em>satisfiable</em> if some program satisfies it, and it
+      <em>entails</em> a sentence if every program that satisfies the set also
+      satisfies the sentence.
+    </p>
+
+    <p lang="zh">
+      <strong>定義 0.5（滿足）</strong>　語句是程序的一種性質；若程序具有該性質，則稱程序滿足該語句。大多數語句只涉及單次執行，當它們在每條軌跡上都成立時即被滿足；另一些語句，如確定性或無干擾性，則需要比較不同的執行（Clarkson 和 Schneider 2010）。若程序滿足一組語句中的每一個，則稱程序滿足這組語句。若存在某個程序滿足這組語句，則稱它是<em>可滿足的</em>；若每個滿足這組語句的程序也滿足某個語句，則稱這組語句<em>蘊涵</em>該語句。
+    </p>
+
+    <p>
+      <strong>Definition 0.6 (Specification).</strong> A specification $S$ is
+      a finite, satisfiable set of sentences.
+    </p>
+
+    <p lang="zh">
+      <strong>定義 0.6（規約）</strong>　規約 $S$ 是一個有限且可滿足的語句集。
+    </p>
+
+    <h3>1. Revision and contraction<br /><span lang="zh">1. 修正與收縮</span></h3>
+
+    <p>
+      Revision adds a sentence to $S$; contraction gives up part of $S$. In
+      both, existing sentences change only by restriction of their domains.
+    </p>
+
+    <p lang="zh">
+      修正是向 $S$ 中加入一個語句；收縮是放棄 $S$ 的一部分。在這兩種操作中，已有語句都只能通過限制論域來改變。
+    </p>
+
+    <p>
+      <strong>Definition 1.0 (Restriction).</strong> A restriction of
+      $\forall x \in D.\ P(x)$ is $\forall x \in D'.\ P(x)$ with
+      $D' \subseteq D$. Restriction to the empty domain removes the sentence.
+    </p>
+
+    <p lang="zh">
+      <strong>定義 1.0（限制）</strong>　$\forall x \in D.\ P(x)$ 的一個限制是 $\forall x \in D'.\ P(x)$，其中 $D' \subseteq D$。限制到空論域，即刪除該語句。
+    </p>
+
+    <p>
+      <strong>Definition 1.1 (Admissible revision).</strong> Let $g$ be
+      satisfiable. An <em>admissible revision</em> of $S$ by $g$ is a
+      satisfiable specification obtained by adding $g$ to $S$ and restricting
+      any number of sentences in $S$. One always exists: restricting every
+      sentence in $S$ to the empty domain leaves $\{g\}$.
+    </p>
+
+    <p lang="zh">
+      <strong>定義 1.1（可容許修正）</strong>　設 $g$ 可滿足。$S$ 關於 $g$ 的<em>可容許修正</em>，是向 $S$ 加入 $g$ 並限制 $S$ 中任意多個語句後得到的可滿足規約。可容許修正總是存在：將 $S$ 中所有語句都限制到空論域，剩下的便是 $\{g\}$。
+    </p>
+
+    <p>
+      <strong>Definition 1.2 (Revision).</strong> An admissible revision is
+      <em>minimal</em> if
+    </p>
+
+    <ol start="0">
+      <li>it restricts the fewest sentences of $S$, and</li>
+      <li>
+        no admissible revision restricts the same sentences to domains that
+        each contain the corresponding domain, at least one strictly.
+      </li>
+    </ol>
+
+    <p lang="zh">
+      <strong>定義 1.2（修正）</strong>　一個可容許修正若滿足以下條件，則稱為<em>極小的</em>：
+    </p>
+
+    <ol start="0" lang="zh">
+      <li>它所限制的 $S$ 中語句個數最少；並且</li>
+      <li>不存在另一個可容許修正，限制同一組語句，所得的各個論域都包含對應的論域，且至少有一個是真包含。</li>
+    </ol>
+
+    <p>
+      A <em>revision</em> of $S$ by $g$ is any minimal admissible revision.
+      One exists, since $S$ and every domain are finite. If
+      $S \cup \{g\}$ is satisfiable, the revision adds $g$ and restricts
+      nothing.
+    </p>
+
+    <p lang="zh">
+      $S$ 關於 $g$ 的<em>修正</em>，指任意一個極小的可容許修正。由於 $S$ 和所有論域都是有限的，修正一定存在。若 $S \cup \{g\}$ 可滿足，則修正只加入 $g$，不限制任何語句。
+    </p>
+
+    <p>
+      <em>Example.</em> If $S$ contains $\forall x \in A.\ P(x)$ and $g$ is
+      $\forall x \in B.\ \neg P(x)$ with $B \subseteq A$, a revision restricts
+      the first sentence to $A \setminus B$.
+    </p>
+
+    <p lang="zh">
+      <em>例：</em>若 $S$ 包含 $\forall x \in A.\ P(x)$，$g$ 為 $\forall x \in B.\ \neg P(x)$，其中 $B \subseteq A$，則一種修正是將前一個語句限制到 $A \setminus B$。
+    </p>
+
+    <p>
+      <strong>Definition 1.3 (Contraction).</strong> Let $h \in S$ have domain
+      $D$, and let $X \subseteq D$. The <em>contraction</em> of $S$ by $h$ on
+      $X$ replaces $h$ with its restriction to $D \setminus X$.
+    </p>
+
+    <p lang="zh">
+      <strong>定義 1.3（收縮）</strong>　設 $h \in S$ 的論域為 $D$，且 $X \subseteq D$。$S$ 關於 $h$ 在 $X$ 上的<em>收縮</em>，是將 $h$ 替換為它在 $D \setminus X$ 上的限制。
+    </p>
+
+    <p>
+      A relaxed requirement is a contraction followed by a revision: to replace
+      &ldquo;within 5 seconds&rdquo; with &ldquo;within 10 seconds,&rdquo;
+      contract by the first on its whole domain, then revise by the second.
+    </p>
+
+    <p lang="zh">
+      放寬一項需求，就是先收縮、再修正。例如，要把“5 秒內”放寬為“10 秒內”，先在前者的整個論域上收縮前者，再以後者進行修正。
+    </p>
+
+    <h2>Part II: Process<br /><span lang="zh">第二部分：過程</span></h2>
+
+    <p>
+      Part I is an idealization. In practice, sentences are written in natural
+      language, and satisfiability, entailment and minimality are judged
+      heuristically by a person or an agent. The definitions state what those
+      judgments aim at.
+    </p>
+
+    <p lang="zh">
+      第一部分是一種理想化。實踐中，語句以自然語言寫成，可滿足性、蘊涵與極小性都由人或智能體憑經驗判斷。上述定義刻畫的，正是這些判斷所要達到的目標。
+    </p>
+
+    <h3>2. Tests<br /><span lang="zh">2. 測試</span></h3>
+
+    <p>
+      <strong>Convention 2.0 (Notation).</strong> Sentences are written as
+      mathematical prose: explicit quantifiers and domains, connectives in
+      their logical sense, and technical terms defined in a glossary.
+      Descriptions too vague to entail anything are kept out of $S$.
+    </p>
+
+    <p lang="zh">
+      <strong>約定 2.0（記法）</strong>　語句以數學化的文字書寫：明確寫出量詞與論域，聯結詞取其邏輯含義，術語在術語表中加以定義。過於含糊、蘊涵不出任何結論的描述，不得納入 $S$。
+    </p>
+
+    <p>
+      <strong>Definition 2.1 (Test).</strong> A test of
+      $\forall x \in D.\ P(x)$ checks $P(a)$ for some $a \in D$ by running the
+      program once or more, using the witnesses fixed by Convention 0.1. A
+      failing test refutes $P(a)$; a passing test does not establish it. A
+      test belongs to the sentence it was derived from. A test of an instance
+      entailed only by several sentences together belongs to all of them, with
+      one sample in each of their domains. Which elements to sample is a
+      matter of judgment; a sentence that is impractical to check may have no
+      tests.
+    </p>
+
+    <p lang="zh">
+      <strong>定義 2.1（測試）</strong>　$\forall x \in D.\ P(x)$ 的測試，是使用約定 0.1 所確定的見證，將程序運行一次或多次，對某個 $a \in D$ 檢查 $P(a)$。未通過的測試反駁 $P(a)$；通過的測試不能確立 $P(a)$。測試歸屬於導出它的語句。若某個實例只能由幾個語句共同蘊涵，則檢查它的測試歸屬於這幾個語句，並在每個語句的論域中各有一個抽樣元素。抽取哪些元素需要判斷；難以實際檢查的語句也可以沒有測試。
+    </p>
+
+    <p>
+      <strong>Principle 2.2 (Direction).</strong> A test should change only
+      when its sentence changes, and code should change only to make tests
+      pass. Both happen only during reconciliation (section 4).
+    </p>
+
+    <p lang="zh">
+      <strong>原則 2.2（方向）</strong>　測試只應隨其語句的改變而改變，代碼只應為使測試通過而改變。兩者都只在調和時發生（第 4 節）。
+    </p>
+
+    <p>
+      <strong>Principle 2.3 (Generality).</strong> A program should generalize
+      as the sentences do, rather than special-case the tested inputs.
+    </p>
+
+    <p lang="zh">
+      <strong>原則 2.3（一般性）</strong>　程序應當像語句一樣具有一般性，而不是針對被測輸入做特殊處理。
+    </p>
+
+    <h3>3. New information<br /><span lang="zh">3. 新信息</span></h3>
+
+    <p>
+      Two conjectures concern the specification, and neither can be proved.
+    </p>
+
+    <p lang="zh">
+      規約涉及兩個猜想，二者都無法證明。
+    </p>
+
+    <ul>
+      <li>
+        <strong>Adequacy</strong>: $S$ describes what people want. The
+        intended behavior is never observed directly, so every sentence is a
+        hypothesis. Checking adequacy is <em>validation</em> (Boehm 1984).
+      </li>
+      <li>
+        <strong>Correctness</strong>: the program satisfies $S$. Domains are
+        generally too large to enumerate, so tests check sentences only at
+        sampled elements, and can reveal failures but never establish their
+        absence (Dijkstra 1970). Type-checking avoids enumeration by reasoning
+        symbolically, establishing the sentences expressed by types over their
+        whole domain. Checking correctness is <em>verification</em>.
+      </li>
+    </ul>
+
+    <ul lang="zh">
+      <li>
+        <strong>充分性</strong>：$S$ 描述了人們想要的東西。預期行為永遠無法被直接觀察，因此每個語句都只是假設。檢查充分性稱為<em>確認</em>（validation；Boehm 1984）。
+      </li>
+      <li>
+        <strong>正確性</strong>：程序滿足 $S$。論域通常大到無法窮舉，因此測試只能在抽樣元素上檢查語句：它能揭示錯誤，卻永遠無法證明錯誤不存在（Dijkstra 1970）。類型檢查以符號推理代替窮舉，能在整個論域上確立類型所表達的語句。檢查正確性稱為<em>驗證</em>（verification）。
+      </li>
+    </ul>
+
+    <p>
+      New information refutes one of these conjectures. It is a sentence
+      stated directly, a counterexample, or a retraction.
+    </p>
+
+    <p lang="zh">
+      新信息會反駁其中一個猜想。它可以是直接陳述的語句、反例或撤回。
+    </p>
+
+    <p>
+      <strong>Definition 3.0 (Counterexample).</strong> A counterexample is an
+      observed case in which the program&rsquo;s behavior differs from what was
+      expected, specified by a condition, an expected value and an observed
+      value. Its <em>instance</em> is the singleton-domain sentence that the
+      expected value is produced under the condition.
+    </p>
+
+    <p lang="zh">
+      <strong>定義 3.0（反例）</strong>　反例是觀察到的、程序行為與預期不符的情形，由條件、預期值和觀察值給出。它的<em>實例</em>是一個論域為單元素集的語句：在該條件下，程序產生預期值。
+    </p>
+
+    <p>
+      <strong>Definition 3.1 (Retraction).</strong> A retraction names a
+      sentence $h$ in $S$ and the part $X$ of its domain on which $h$ should no
+      longer hold.
+    </p>
+
+    <p lang="zh">
+      <strong>定義 3.1（撤回）</strong>　撤回指明 $S$ 中的某個語句 $h$，以及其論域中 $h$ 不應再成立的部分 $X$。
+    </p>
+
+    <p>
+      <strong>Definition 3.2 (Entailment check).</strong> The entailment check
+      determines which conjecture new information refutes.
+    </p>
+
+    <ul>
+      <li>
+        A sentence $g$ refutes adequacy if $S$ does not entail $g$, and refutes
+        neither otherwise.
+      </li>
+      <li>
+        A counterexample refutes correctness if $S$ entails its instance, and
+        adequacy otherwise.
+      </li>
+      <li>A retraction always refutes adequacy.</li>
+    </ul>
+
+    <p lang="zh">
+      <strong>定義 3.2（蘊涵檢查）</strong>　蘊涵檢查用於判定新信息反駁的是哪一個猜想。
+    </p>
+
+    <ul lang="zh">
+      <li>對語句 $g$：若 $S$ 不蘊涵 $g$，則 $g$ 反駁充分性；否則兩個猜想都不反駁。</li>
+      <li>對反例：若 $S$ 蘊涵其實例，則反駁正確性；否則反駁充分性。</li>
+      <li>對撤回：總是反駁充分性。</li>
+    </ul>
+
+    <p>
+      <strong>Definition 3.3 (Generalization).</strong> A generalization of a
+      counterexample is a sentence that entails its instance. Many sentences
+      do, so choosing one is an inductive conjecture.
+    </p>
+
+    <p lang="zh">
+      <strong>定義 3.3（泛化）</strong>　反例的泛化，是任何蘊涵其實例的語句。這樣的語句有很多，因此選定其中一個，是一種歸納猜想。
+    </p>
+
+    <p>
+      <strong>Principle 3.4 (Stated generalization).</strong> A counterexample
+      that refutes adequacy should come with its generalization, stated by
+      whoever reported it; otherwise it should be returned with a request for
+      one.
+    </p>
+
+    <p lang="zh">
+      <strong>原則 3.4（附帶泛化）</strong>　反駁充分性的反例，應由報告者附上其泛化；否則應退回該反例，並請對方提供泛化。
+    </p>
+
+    <h3>4. Reconciliation<br /><span lang="zh">4. 調和</span></h3>
+
+    <p>
+      <strong>Procedure 4.0 (Reconciliation).</strong> Let $S'$ be $S$, a
+      revision of $S$ by $g$, or a contraction of $S$. Let $T$ be the test
+      suite, $p$ the program, and $E$ a set of additional tests, possibly
+      empty, each belonging only to sentences in $S'$.
+    </p>
+
+    <ol start="0">
+      <li>Remove from $T$ every test that belongs to a removed sentence.</li>
+      <li>
+        For each restricted sentence, remove every test belonging to it whose
+        sample from that sentence lies outside the new domain.
+      </li>
+      <li>If $S'$ is a revision by $g$, derive tests for $g$. Add them and $E$ to $T$.</li>
+      <li>Change $p$, following Principle 2.3, until it type-checks and passes $T$.</li>
+      <li>Return the resulting $T'$ and $p'$.</li>
+    </ol>
+
+    <p lang="zh">
+      <strong>過程 4.0（調和）</strong>　設 $S'$ 為 $S$ 本身、$S$ 關於 $g$ 的修正或 $S$ 的收縮；$T$ 為測試套件，$p$ 為程序，$E$ 為一組額外測試（可以為空），其中每個測試所歸屬的語句都在 $S'$ 中。
+    </p>
+
+    <ol start="0" lang="zh">
+      <li>從 $T$ 中刪除所有歸屬於被移除語句的測試。</li>
+      <li>對每個被限制的語句，刪除歸屬於它、且在它之中的抽樣元素落在新論域之外的測試。</li>
+      <li>若 $S'$ 是關於 $g$ 的修正，則為 $g$ 導出測試，並將這些測試與 $E$ 一併加入 $T$。</li>
+      <li>遵循原則 2.3 修改 $p$，直到它通過類型檢查並通過 $T$ 中的全部測試。</li>
+      <li>返回所得的 $T'$ 和 $p'$。</li>
+    </ol>
+
+    <p>
+      Step 3 is assumed to succeed: $S'$ is satisfiable, and a program that
+      satisfies $S'$ passes $T'$.
+    </p>
+
+    <p lang="zh">
+      假設第 3 步總能成功：$S'$ 可滿足，而滿足 $S'$ 的程序能通過 $T'$。
+    </p>
+
+    <h3>5. The software engineering loop<br /><span lang="zh">5. 軟件工程循環</span></h3>
+
+    <p>
+      <strong>Definition 5.0 (State).</strong> The state of a project is a
+      triple $(S, T, p)$ of a specification, a test suite and a program, with
+      three invariants:
+    </p>
+
+    <ol start="0">
+      <li>$S$ is satisfiable;</li>
+      <li>every test in $T$ belongs only to sentences in $S$;</li>
+      <li>$p$ type-checks and passes every test in $T$.</li>
+    </ol>
+
+    <p lang="zh">
+      <strong>定義 5.0（狀態）</strong>　項目的狀態是一個三元組 $(S, T, p)$，依次為規約、測試套件和程序，並滿足以下三條不變式：
+    </p>
+
+    <ol start="0" lang="zh">
+      <li>$S$ 可滿足；</li>
+      <li>$T$ 中每個測試所歸屬的語句都在 $S$ 中；</li>
+      <li>$p$ 通過類型檢查，並通過 $T$ 中的每個測試。</li>
+    </ol>
+
+    <p>
+      The initial state is $(S_0, T_0, p_0) = (\emptyset, \emptyset, p_0)$ for
+      any program $p_0$ that type-checks.
+    </p>
+
+    <p lang="zh">
+      對任意通過類型檢查的程序 $p_0$，初始狀態為 $(S_0, T_0, p_0) = (\emptyset, \emptyset, p_0)$。
+    </p>
+
+    <p>
+      <strong>Procedure 5.1 (Software engineering loop).</strong> The
+      $n$-th piece of new information $\delta_n$ takes $(S_n, T_n, p_n)$ to
+      $(S_{n+1}, T_{n+1}, p_{n+1})$:
+    </p>
+
+    <ol start="0">
+      <li>
+        If $\delta_n$ is a counterexample, reproduce it. If it cannot be
+        reproduced, discard $\delta_n$ and leave the state unchanged.
+      </li>
+      <li>
+        Apply the entailment check (Definition 3.2). If neither conjecture is
+        refuted, discard $\delta_n$ and leave the state unchanged.
+      </li>
+      <li>
+        If correctness is refuted, let $S_{n+1} = S_n$, and let $E$ contain
+        the instance of $\delta_n$ as a test belonging to a minimal set of
+        sentences in $S_n$ that together entail it.
+      </li>
+      <li>
+        If adequacy is refuted by a sentence or a counterexample, let $g_n$ be
+        $\delta_n$ or its stated generalization (Principle 3.4), written
+        according to Conventions 0.1, 0.3 and 2.0. If $g_n$ is unsatisfiable,
+        return $\delta_n$ to whoever reported it and leave the state unchanged.
+        Otherwise, let $S_{n+1}$ be a revision of $S_n$ by $g_n$, and let $E$
+        contain the instance of $\delta_n$ if $\delta_n$ is a counterexample,
+        and be empty otherwise.
+      </li>
+      <li>
+        If $\delta_n$ is a retraction of $h$ on $X$, let $S_{n+1}$ be the
+        contraction of $S_n$ by $h$ on $X$, and let $E$ be empty.
+      </li>
+      <li>
+        Apply reconciliation to $S_n$, $S_{n+1}$, $T_n$, $p_n$ and $E$, giving
+        $T_{n+1}$ and $p_{n+1}$.
+      </li>
+      <li>
+        If $\delta_n$ reverses earlier information on the same case, report the
+        conflict to the people involved.
+      </li>
+      <li>
+        Deploy $p_{n+1}$. Its observed behavior and new requests supply
+        $\delta_{n+1}$.
+      </li>
+    </ol>
+
+    <p lang="zh">
+      <strong>過程 5.1（軟件工程循環）</strong>　第 $n$ 條新信息 $\delta_n$ 將狀態 $(S_n, T_n, p_n)$ 變為 $(S_{n+1}, T_{n+1}, p_{n+1})$：
+    </p>
+
+    <ol start="0" lang="zh">
+      <li>若 $\delta_n$ 是反例，先復現它；若無法復現，則丟棄 $\delta_n$，狀態不變。</li>
+      <li>進行蘊涵檢查（定義 3.2）。若兩個猜想均未被反駁，則丟棄 $\delta_n$，狀態不變。</li>
+      <li>若正確性被反駁，令 $S_{n+1} = S_n$，並令 $E$ 包含 $\delta_n$ 的實例，將其作為一個測試，歸屬於 $S_n$ 中共同蘊涵該實例的一組極小語句。</li>
+      <li>若充分性被語句或反例反駁，令 $g_n$ 為 $\delta_n$ 本身或報告者給出的泛化（原則 3.4），並按約定 0.1、0.3 和 2.0 書寫。若 $g_n$ 不可滿足，則將 $\delta_n$ 退回報告者，狀態不變。否則，令 $S_{n+1}$ 為 $S_n$ 關於 $g_n$ 的修正；若 $\delta_n$ 是反例，令 $E$ 包含其實例，否則令 $E$ 為空。</li>
+      <li>若 $\delta_n$ 是 $h$ 在 $X$ 上的撤回，令 $S_{n+1}$ 為 $S_n$ 關於 $h$ 在 $X$ 上的收縮，並令 $E$ 為空。</li>
+      <li>對 $S_n$、$S_{n+1}$、$T_n$、$p_n$ 和 $E$ 執行調和，得到 $T_{n+1}$ 和 $p_{n+1}$。</li>
+      <li>若 $\delta_n$ 推翻了先前關於同一情形的信息，則向相關人員報告這一衝突。</li>
+      <li>部署 $p_{n+1}$。其運行中觀察到的行為以及新的需求，構成 $\delta_{n+1}$。</li>
+    </ol>
+
+    <p>
+      Each iteration preserves the invariants: revisions and contractions are
+      satisfiable; reconciliation removes the tests of removed sentences and
+      the tests whose samples leave restricted domains, and adds only tests of
+      sentences in $S_{n+1}$; and step 3 of reconciliation gives invariant 2.
+      Every definition, convention and principle above enters
+      the loop at some step.
+    </p>
+
+    <p lang="zh">
+      每次迭代都保持上述不變式：修正與收縮都可滿足；調和刪除被移除語句的測試以及抽樣元素離開被限制論域的測試，並且只加入 $S_{n+1}$ 中語句的測試；調和的第 3 步保證不變式 2。上文的每一條定義、約定和原則，都在循環的某一步中得到運用。
+    </p>
+
+    <h2>6. Related work<br /><span lang="zh">6. 相關工作</span></h2>
+
+    <p>
+      AGM theory (Alchourrón, Gärdenfors and
+      Makinson 1985) formalizes the revision and contraction of theories, and
+      Hansson (1999) studies the revision of finite belief bases. Katsuno and
+      Mendelzon (1991) distinguish revising a knowledge base from updating it.
+      Shapiro&rsquo;s Model Inference System (Shapiro 1983) and inductive logic
+      programming (Muggleton and De Raedt 1994) revise logical theories from
+      examples. Clarkson and Schneider (2010) define hyperproperties, which
+      compare executions. Popper (1963) treats scientific theories as
+      refutable conjectures. Naur (1985) describes programming as building a
+      theory, and Lehman (1980) observes that software in use must keep
+      changing.
+    </p>
+
+    <p lang="zh">
+      AGM 理論（Alchourrón、Gärdenfors 和 Makinson 1985）形式化了理論的修正與收縮，Hansson（1999）研究了有限信念基的修正。Katsuno 和 Mendelzon（1991）區分了知識庫的修正與更新。Shapiro 的模型推理系統（Shapiro 1983）與歸納邏輯程序設計（Muggleton 和 De Raedt 1994）根據樣例修正邏輯理論。Clarkson 和 Schneider（2010）定義了超性質，用以刻畫需要比較不同執行的性質。Popper（1963）把科學理論視為可被反駁的猜想。Naur（1985）將編程描述為構建理論的過程；Lehman（1980）則指出，投入使用的軟件必須持續演化。
+    </p>
+
+    <h2>References<br /><span lang="zh">參考文獻</span></h2>
+
+    <ul>
+      <li>
+        Alchourrón, C., Gärdenfors, P. and Makinson, D. (1985). On the logic of
+        theory change: partial meet contraction and revision functions.
+        <i>Journal of Symbolic Logic</i> 50(2).
+      </li>
+      <li>
+        Boehm, B. W. (1984). Verifying and validating software requirements and
+        design specifications. <i>IEEE Software</i> 1(1).
+      </li>
+      <li>
+        Clarkson, M. R. and Schneider, F. B. (2010). Hyperproperties.
+        <i>Journal of Computer Security</i> 18(6).
+      </li>
+      <li>Dijkstra, E. W. (1970). Notes on structured programming. EWD249.</li>
+      <li>Hansson, S. O. (1999). <i>A Textbook of Belief Dynamics</i>. Kluwer.</li>
+      <li>
+        Katsuno, H. and Mendelzon, A. (1991). On the difference between
+        updating a knowledge base and revising it. <i>KR 1991</i>.
+      </li>
+      <li>
+        Lehman, M. M. (1980). Programs, life cycles, and laws of software
+        evolution. <i>Proceedings of the IEEE</i> 68(9).
+      </li>
+      <li>
+        Muggleton, S. and De Raedt, L. (1994). Inductive logic programming:
+        theory and methods. <i>Journal of Logic Programming</i> 19&ndash;20.
+      </li>
+      <li>
+        Naur, P. (1985). Programming as theory building.
+        <i>Microprocessing and Microprogramming</i> 15(5).
+      </li>
+      <li>Pnueli, A. (1977). The temporal logic of programs. <i>FOCS 1977</i>.</li>
+      <li>Popper, K. (1963). <i>Conjectures and Refutations</i>. Routledge.</li>
+      <li>Shapiro, E. (1983). <i>Algorithmic Program Debugging</i>. MIT Press.</li>
+    </ul>
+  </body>
+</html>
