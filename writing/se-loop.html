@@ -65,7 +65,7 @@
     </p>
 
     <p>
-      <strong>Convention 0.1 (Witnesses).</strong> Every existential quantifier
+      <strong>Convention 0.1.</strong> Every existential quantifier
       is replaced by a chosen witness, which strengthens the sentence:
       &ldquo;the user named admin&rdquo; for &ldquo;some admin user,&rdquo;
       &ldquo;within 5 seconds&rdquo; for &ldquo;eventually.&rdquo; Inside a
@@ -74,7 +74,7 @@
     </p>
 
     <p lang="zh">
-      <strong>約定 0.1（見證）</strong>　每個存在量詞都替換為一個選定的見證，這會使語句變強：例如用“名為 admin 的用戶”代替“某個管理員用戶”，用“5 秒內”代替“最終”。在全稱量詞的轄域內，見證可以依賴於約束變量，如同 Skolem 函數。
+      <strong>約定 0.1</strong>　每個存在量詞都替換為一個選定的見證，這會使語句變強：例如用“名為 admin 的用戶”代替“某個管理員用戶”，用“5 秒內”代替“最終”。在全稱量詞的轄域內，見證可以依賴於約束變量，如同 Skolem 函數。
     </p>
 
     <p>
@@ -88,12 +88,12 @@
     </p>
 
     <p>
-      <strong>Convention 0.3 (Time).</strong> A sentence holds at all times
+      <strong>Convention 0.3.</strong> A sentence holds at all times
       unless it states a time bound (Pnueli 1977).
     </p>
 
     <p lang="zh">
-      <strong>約定 0.3（時間）</strong>　除非語句給出了時間界限，否則它在任何時刻都成立（Pnueli 1977）。
+      <strong>約定 0.3</strong>　除非語句給出了時間界限，否則它在任何時刻都成立（Pnueli 1977）。
     </p>
 
     <p>
@@ -218,13 +218,14 @@
     </p>
 
     <p>
-      A relaxed requirement is a contraction followed by a revision: to replace
+      <strong>Remark 1.4.</strong> A relaxed requirement is a
+      contraction followed by a revision: to replace
       &ldquo;within 5 seconds&rdquo; with &ldquo;within 10 seconds,&rdquo;
       contract by the first on its whole domain, then revise by the second.
     </p>
 
     <p lang="zh">
-      放寬一項需求，就是先收縮、再修正。例如，要把“5 秒內”放寬為“10 秒內”，先在前者的整個論域上收縮前者，再以後者進行修正。
+      <strong>註 1.4</strong>　放寬一項需求，就是先收縮、再修正。例如，要把“5 秒內”放寬為“10 秒內”，先在前者的整個論域上收縮前者，再以後者進行修正。
     </p>
 
     <h2>Part II: Process<br /><span lang="zh">第二部分：過程</span></h2>
@@ -243,14 +244,14 @@
     <h3>2. Tests<br /><span lang="zh">2. 測試</span></h3>
 
     <p>
-      <strong>Convention 2.0 (Notation).</strong> Sentences are written as
+      <strong>Convention 2.0.</strong> Sentences are written as
       mathematical prose: explicit quantifiers and domains, connectives in
       their logical sense, and technical terms defined in a glossary.
       Descriptions too vague to entail anything are kept out of $S$.
     </p>
 
     <p lang="zh">
-      <strong>約定 2.0（記法）</strong>　語句以數學化的文字書寫：明確寫出量詞與論域，聯結詞取其邏輯含義，術語在術語表中加以定義。過於含糊、蘊涵不出任何結論的描述，不得納入 $S$。
+      <strong>約定 2.0</strong>　語句以數學化的文字書寫：明確寫出量詞與論域，聯結詞取其邏輯含義，術語在術語表中加以定義。過於含糊、蘊涵不出任何結論的描述，不得納入 $S$。
     </p>
 
     <p>
@@ -270,22 +271,22 @@
     </p>
 
     <p>
-      <strong>Principle 2.2 (Direction).</strong> A test should change only
+      <strong>Principle 2.2.</strong> A test should change only
       when its sentence changes, and code should change only to make tests
       pass. Both happen only during reconciliation (section 4).
     </p>
 
     <p lang="zh">
-      <strong>原則 2.2（方向）</strong>　測試只應隨其語句的改變而改變，代碼只應為使測試通過而改變。兩者都只在調和時發生（第 4 節）。
+      <strong>原則 2.2</strong>　測試只應隨其語句的改變而改變，代碼只應為使測試通過而改變。兩者都只在調和時發生（第 4 節）。
     </p>
 
     <p>
-      <strong>Principle 2.3 (Generality).</strong> A program should generalize
+      <strong>Principle 2.3.</strong> A program should generalize
       as the sentences do, rather than special-case the tested inputs.
     </p>
 
     <p lang="zh">
-      <strong>原則 2.3（一般性）</strong>　程序應當像語句一樣具有一般性，而不是針對被測輸入做特殊處理。
+      <strong>原則 2.3</strong>　程序應當像語句一樣具有一般性，而不是針對被測輸入做特殊處理。
     </p>
 
     <h3>3. New information<br /><span lang="zh">3. 新信息</span></h3>
@@ -392,14 +393,14 @@
     </p>
 
     <p>
-      <strong>Principle 3.4 (Stated generalization).</strong> A counterexample
+      <strong>Principle 3.4.</strong> A counterexample
       that refutes adequacy should come with its generalization, stated by
       whoever reported it; otherwise it should be returned with a request for
       one.
     </p>
 
     <p lang="zh">
-      <strong>原則 3.4（附帶泛化）</strong>　反駁充分性的反例，應由報告者附上其泛化；否則應退回該反例，並請對方提供泛化。
+      <strong>原則 3.4</strong>　反駁充分性的反例，應由報告者附上其泛化；否則應退回該反例，並請對方提供泛化。
     </p>
 
     <h3>4. Reconciliation<br /><span lang="zh">4. 調和</span></h3>
@@ -435,12 +436,12 @@
     </ol>
 
     <p>
-      Step 3 is assumed to succeed: $S'$ is satisfiable, and a program that
+      <strong>Remark 4.1.</strong> Step 3 is assumed to succeed: $S'$ is satisfiable, and a program that
       satisfies $S'$ passes $T'$.
     </p>
 
     <p lang="zh">
-      假設第 3 步總能成功：$S'$ 可滿足，而滿足 $S'$ 的程序能通過 $T'$。
+      <strong>註 4.1</strong>　假設第 3 步總能成功：$S'$ 可滿足，而滿足 $S'$ 的程序能通過 $T'$。
     </p>
 
     <h3>5. The software engineering loop<br /><span lang="zh">5. 軟件工程循環</span></h3>
@@ -539,7 +540,8 @@
     </ol>
 
     <p>
-      Each iteration preserves the invariants: revisions and contractions are
+      <strong>Remark 5.2.</strong> Each iteration preserves the
+      invariants: revisions and contractions are
       satisfiable; reconciliation removes the tests of removed sentences and
       the tests whose samples leave restricted domains, and adds only tests of
       sentences in $S_{n+1}$; and step 3 of reconciliation gives invariant 2.
@@ -548,7 +550,7 @@
     </p>
 
     <p lang="zh">
-      每次迭代都保持上述不變式：修正與收縮都可滿足；調和刪除被移除語句的測試以及抽樣元素離開被限制論域的測試，並且只加入 $S_{n+1}$ 中語句的測試；調和的第 3 步保證不變式 2。上文的每一條定義、約定和原則，都在循環的某一步中得到運用。
+      <strong>註 5.2</strong>　每次迭代都保持上述不變式：修正與收縮都可滿足；調和刪除被移除語句的測試以及抽樣元素離開被限制論域的測試，並且只加入 $S_{n+1}$ 中語句的測試；調和的第 3 步保證不變式 2。上文的每一條定義、約定和原則，都在循環的某一步中得到運用。
     </p>
 
     <h2>6. Related work<br /><span lang="zh">6. 相關工作</span></h2>
