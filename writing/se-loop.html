@@ -5,13 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The Software Engineering Loop</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
-    <style>.katex { font-size: 1em; }</style>
+    <style>
+      .katex { font-size: 1em; }
+      .essay table { border-collapse: collapse; margin: 1em 0; }
+      .essay caption { caption-side: top; text-align: left; padding-bottom: 0.4em; }
+      .essay th, .essay td { text-align: left; vertical-align: top; padding: 0.3em 1em 0.3em 0; }
+      .essay thead th { border-top: 1px solid; border-bottom: 1px solid; }
+      .essay tbody tr:last-child td { border-bottom: 1px solid; }
+    </style>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         renderMathInElement(document.body, {
-          delimiters: [{ left: "$", right: "$", display: false }],
+          delimiters: [
+            { left: "$$", right: "$$", display: true },
+            { left: "$", right: "$", display: false },
+          ],
+          ignoredClasses: ["no-math"],
         });
       });
     </script>
@@ -19,597 +30,849 @@
   </head>
 
   <body class="essay">
-    <h1>
-      The Software Engineering Loop<br />
-      <span lang="zh">軟件工程循環</span>
-    </h1>
+    <h1>The Software Engineering Loop</h1>
 
-    <h2>Overview<br /><span lang="zh">概述</span></h2>
+    <p><em>Development as decision-making under an unknown specification</em></p>
 
-    <p>
-      This essay models software engineering in the language of mathematical
-      logic. The specification is a theory: a satisfiable set of sentences
-      about how the software should behave. Part I defines programs,
-      the specification, and how the specification changes. Part II relates
-      tests to it, classifies new information, and combines everything into the
-      software engineering loop (section 5).
-    </p>
-
-    <p lang="zh">
-      本文用數理邏輯的語言為軟件工程建模。規約是一個理論，即一組描述軟件應當如何運行、且可滿足的語句。第一部分定義程序、規約以及規約的變化方式。第二部分將測試同規約聯繫起來，對新信息加以分類，最後把這些內容整合為軟件工程循環（第 5 節）。
-    </p>
+    <h2>Abstract</h2>
 
     <p>
-      The specification is never final, so the loop never terminates. Because
-      each step is precisely defined, the loop can serve as a standard
-      procedure instead of an ad hoc practice, and can therefore be automated.
-      We hope this will produce better software.
+      In program synthesis the specification is given. In software engineering
+      it is not: the people who will judge the software cannot state in
+      advance what they want, and what they want changes in response to what is
+      built. We model development as a partially observable decision process
+      whose hidden state is the stakeholder&rsquo;s current specification and
+      whose actions are programs. A rejected program then reflects one of two
+      failures: a program that does not satisfy its specification, or a
+      specification that does not describe what is wanted. From the model we
+      derive a procedure a person or an agent can operate, the <em>software
+      engineering loop</em>: keep a single working specification as a finite
+      set of logical sentences, classify each piece of new information by the
+      failure it reveals, revise the specification, and reconcile tests and
+      code with it.
     </p>
 
-    <p lang="zh">
-      規約永遠不會定稿，因此這個循環永不終止。由於每一步都有精確的定義，這一循環可以成為標準流程，而不只是臨時性的做法，也因此可以自動化。我們希望藉此做出更好的軟件。
-    </p>
-
-    <h2>Part I: Model<br /><span lang="zh">第一部分：模型</span></h2>
-
-    <h3>0. Programs and specifications<br /><span lang="zh">0. 程序與規約</span></h3>
+    <h2>1. Introduction</h2>
 
     <p>
-      <strong>Definition 0.0 (Sentence).</strong> A sentence is a statement
-      about the software&rsquo;s behavior. Logically equivalent sentences are
-      distinct.
+      Brooks (1987) argued that the hardest part of building software is
+      deciding precisely what to build. Requirements are incomplete,
+      specification and implementation are intertwined (Swartout and Balzer
+      1982), and software in use must keep changing (Lehman 1980). The field
+      has many process models and techniques that respond to these
+      observations. This article offers a compact model of the problem they
+      address and derives a working procedure from it. We take the central
+      problem to be this:
     </p>
 
-    <p lang="zh">
-      <strong>定義 0.0（語句）</strong>　語句是關於軟件行為的陳述。邏輯上等價的語句是不同的語句。
-    </p>
-
-    <p>
-      <strong>Convention 0.1.</strong> Every existential quantifier
-      is replaced by a chosen witness, which strengthens the sentence:
-      &ldquo;the user named admin&rdquo; for &ldquo;some admin user,&rdquo;
-      &ldquo;within 5 seconds&rdquo; for &ldquo;eventually.&rdquo; Inside a
-      universal quantifier, the witness may depend on the bound variable, as a
-      Skolem function does.
-    </p>
-
-    <p lang="zh">
-      <strong>約定 0.1</strong>　每個存在量詞都替換為一個選定的見證，這會使語句變強：例如用“名為 admin 的用戶”代替“某個管理員用戶”，用“5 秒內”代替“最終”。在全稱量詞的轄域內，見證可以依賴於約束變量，如同 Skolem 函數。
-    </p>
+    <blockquote>
+      <p>
+        <em>Software engineering is the problem of producing programs when the
+        specification they must satisfy is unknown, must be inferred from
+        interaction with the people who will judge the programs, and may change
+        as a result of that interaction.</em>
+      </p>
+    </blockquote>
 
     <p>
-      <strong>Definition 0.2 (Domain).</strong> Every sentence thus has the
-      form $\forall x \in D.\ P(x)$, and $D$ is its <em>domain</em>. A sentence
-      about a single object has a singleton domain. Every domain is finite.
-    </p>
-
-    <p lang="zh">
-      <strong>定義 0.2（論域）</strong>　因此，每個語句都具有 $\forall x \in D.\ P(x)$ 的形式，其中 $D$ 稱為該語句的<em>論域</em>。關於單個對象的語句，其論域是單元素集。所有論域都是有限的。
+      On this view, producing a program for a given specification, the problem
+      studied by program synthesis, is one component of a solution. The others
+      are forming a belief about the specification, revising it as new
+      information arrives, and choosing programs under it. A developer must
+      therefore get two things right, and they can fail independently. When a
+      delivered program is rejected, either the program does not satisfy the
+      developer&rsquo;s specification, a failure of <em>correctness</em>, or
+      that specification does not describe what was wanted, a failure of
+      <em>adequacy</em>. The first calls for changing the program and the
+      second for changing the specification.
     </p>
 
     <p>
-      <strong>Convention 0.3.</strong> A sentence holds at all times
-      unless it states a time bound (Pnueli 1977).
+      We state the model at three levels, each an approximation of the one
+      before. The first is the problem: a partially observable decision process
+      whose hidden state, the specification currently wanted, moves in response
+      to what is built (Section 3). Its ideal solution is intractable, but it
+      fixes what counts as success and what any practical method approximates.
+      The second is an approximation in which the developer maintains a single
+      working specification, written as a finite set of logical sentences
+      (Sections 3.3 to 5). The logic is there to make the decision process
+      concrete: it yields objects that can be written down, checked and
+      revised. The third is practice, in which people and agents make the
+      judgments that the approximation calls for heuristically and in natural
+      language. The developer enters the model only through the programs it
+      produces, so the model does not distinguish human from AI developers.
     </p>
 
-    <p lang="zh">
-      <strong>約定 0.3</strong>　除非語句給出了時間界限，否則它在任何時刻都成立（Pnueli 1977）。
+    <h2>2. The problem</h2>
+
+    <h3>2.1 Objectives and specifications</h3>
+
+    <p>Let $\mathcal{P}$ be the set of programs.</p>
+
+    <p>
+      <strong>Definition 2.1 (Objective).</strong> At time $t$ the stakeholder
+      has an <em>acceptance set</em> $A_t \subseteq \mathcal{P}$: the programs
+      it would accept. This set is the objective at time $t$. The stakeholder
+      judges behavior, so two programs that behave identically are either both
+      acceptable or both not.
+    </p>
+
+    <p>The engineering problem at time $t$ is to produce some $p \in A_t$.</p>
+
+    <p>
+      <strong>Definition 2.2 (Specification).</strong> A
+      <em>specification</em> $S$ is a finite description that a program $p$
+      either satisfies, written $p \models S$, or does not. Its set of models
+      is
+      $$\operatorname{Mod}(S) = \{\, p \in \mathcal{P} : p \models S \,\}.$$
     </p>
 
     <p>
-      <strong>Definition 0.4 (Program).</strong> A program is identified with
-      its set of execution traces, which contains at least one trace for every
-      input.
-    </p>
-
-    <p lang="zh">
-      <strong>定義 0.4（程序）</strong>　程序等同於其執行軌跡的集合，並且對每一個輸入，該集合至少包含一條軌跡。
-    </p>
-
-    <p>
-      <strong>Definition 0.5 (Satisfaction).</strong> A sentence is a property
-      of programs, and a program satisfies it if the program has that property.
-      Most sentences concern single executions and are satisfied when they
-      hold on every trace; others, such as determinism or noninterference,
-      compare executions (Clarkson and Schneider 2010). A program satisfies a
-      set of sentences if it satisfies each of them. The set is
-      <em>satisfiable</em> if some program satisfies it, and it
-      <em>entails</em> a sentence if every program that satisfies the set also
-      satisfies the sentence.
-    </p>
-
-    <p lang="zh">
-      <strong>定義 0.5（滿足）</strong>　語句是程序的一種性質；若程序具有該性質，則稱程序滿足該語句。大多數語句只涉及單次執行，當它們在每條軌跡上都成立時即被滿足；另一些語句，如確定性或無干擾性，則需要比較不同的執行（Clarkson 和 Schneider 2010）。若程序滿足一組語句中的每一個，則稱程序滿足這組語句。若存在某個程序滿足這組語句，則稱它是<em>可滿足的</em>；若每個滿足這組語句的程序也滿足某個語句，則稱這組語句<em>蘊涵</em>該語句。
+      <strong>Definition 2.3 (Latent specification).</strong> We assume that at
+      each time $t$ the objective admits a description of practical length: a
+      specification $S^*_t$ with $\operatorname{Mod}(S^*_t) = A_t$ that states
+      a condition on behavior rather than listing programs. Several
+      specifications may describe the same objective; nothing below depends on
+      the choice, and we call any one of them the <em>latent
+      specification</em>.
     </p>
 
     <p>
-      <strong>Definition 0.6 (Specification).</strong> A specification $S$ is
-      a finite, satisfiable set of sentences.
-    </p>
-
-    <p lang="zh">
-      <strong>定義 0.6（規約）</strong>　規約 $S$ 是一個有限且可滿足的語句集。
-    </p>
-
-    <h3>1. Revision and contraction<br /><span lang="zh">1. 修正與收縮</span></h3>
-
-    <p>
-      Revision adds a sentence to $S$; contraction gives up part of $S$. In
-      both, existing sentences change only by restriction of their domains.
-    </p>
-
-    <p lang="zh">
-      修正是向 $S$ 中加入一個語句；收縮是放棄 $S$ 的一部分。在這兩種操作中，已有語句都只能通過限制論域來改變。
+      The latent specification is not known in advance, either to the
+      stakeholder or to the developer: the stakeholder can judge a program it
+      is shown but cannot state $S^*_t$. If it were known, the engineering
+      problem would reduce to program synthesis: producing a program that
+      satisfies a given specification. Software engineering, in short, is
+      synthesis under an unknown specification.
     </p>
 
     <p>
-      <strong>Definition 1.0 (Restriction).</strong> A restriction of
-      $\forall x \in D.\ P(x)$ is $\forall x \in D'.\ P(x)$ with
-      $D' \subseteq D$. Restriction to the empty domain removes the sentence.
+      Two idealizations should be noted. The single stakeholder stands for what
+      may be several people with conflicting wishes; the model treats them as
+      one source of judgments, and the loop of Section 5 reports the conflicts
+      it detects rather than resolving them. And because the stakeholder judges
+      behavior, the objective covers only what can be observed of the
+      software. Qualities of the program text, such as how easily it can be
+      changed, enter the model only through the cost of modification
+      (Section 3.1).
     </p>
 
-    <p lang="zh">
-      <strong>定義 1.0（限制）</strong>　$\forall x \in D.\ P(x)$ 的一個限制是 $\forall x \in D'.\ P(x)$，其中 $D' \subseteq D$。限制到空論域，即刪除該語句。
+    <h3>2.2 Capability and belief</h3>
+
+    <p>
+      Fix a time $t$. We model the developer as an agent, human or AI, that
+      holds a belief about the latent specification and produces a program for
+      the specification it believes is wanted.
     </p>
 
     <p>
-      <strong>Definition 1.1 (Admissible revision).</strong> Let $g$ be
-      satisfiable. An <em>admissible revision</em> of $S$ by $g$ is a
-      satisfiable specification obtained by adding $g$ to $S$ and restricting
-      any number of sentences in $S$. One always exists: restricting every
-      sentence in $S$ to the empty domain leaves $\{g\}$.
-    </p>
-
-    <p lang="zh">
-      <strong>定義 1.1（可容許修正）</strong>　設 $g$ 可滿足。$S$ 關於 $g$ 的<em>可容許修正</em>，是向 $S$ 加入 $g$ 並限制 $S$ 中任意多個語句後得到的可滿足規約。可容許修正總是存在：將 $S$ 中所有語句都限制到空論域，剩下的便是 $\{g\}$。
+      <strong>Definition 2.4 (Capability and belief).</strong> The
+      developer&rsquo;s <em>belief</em> $b$ is a probability distribution over
+      specifications. Its <em>capability</em> $\pi(p \mid S)$ is the
+      probability that it produces program $p$ when working from specification
+      $S$. The program it delivers has distribution
+      $$\pi(p) = \sum_{S} \pi(p \mid S)\, b(S).$$
     </p>
 
     <p>
-      <strong>Definition 1.2 (Revision).</strong> An admissible revision is
-      <em>minimal</em> if
+      A delivered program is accepted when the developer believes something
+      close enough to what is wanted and then builds what it believes.
+      Acceptance needs both factors: a developer of perfect capability is
+      accepted only as often as its belief leads it to acceptable programs.
+      Program synthesis studies the first factor with the second held certain.
     </p>
 
-    <ol start="0">
-      <li>it restricts the fewest sentences of $S$, and</li>
-      <li>
-        no admissible revision restricts the same sentences to domains that
-        each contain the corresponding domain, at least one strictly.
-      </li>
-    </ol>
-
-    <p lang="zh">
-      <strong>定義 1.2（修正）</strong>　一個可容許修正若滿足以下條件，則稱為<em>極小的</em>：
-    </p>
-
-    <ol start="0" lang="zh">
-      <li>它所限制的 $S$ 中語句個數最少；並且</li>
-      <li>不存在另一個可容許修正，限制同一組語句，所得的各個論域都包含對應的論域，且至少有一個是真包含。</li>
-    </ol>
+    <h3>2.3 Adequacy and correctness</h3>
 
     <p>
-      A <em>revision</em> of $S$ by $g$ is any minimal admissible revision.
-      One exists, since $S$ and every domain are finite. If
-      $S \cup \{g\}$ is satisfiable, the revision adds $g$ and restricts
-      nothing.
-    </p>
-
-    <p lang="zh">
-      $S$ 關於 $g$ 的<em>修正</em>，指任意一個極小的可容許修正。由於 $S$ 和所有論域都是有限的，修正一定存在。若 $S \cup \{g\}$ 可滿足，則修正只加入 $g$，不限制任何語句。
+      <strong>Definition 2.5 (Adequacy and correctness).</strong> A
+      specification $S$ is <em>adequate</em> at time $t$ if
+      $\operatorname{Mod}(S) = A_t$. A program $p$ is <em>correct</em> with
+      respect to $S$ if $p \models S$.
     </p>
 
     <p>
-      <em>Example.</em> If $S$ contains $\forall x \in A.\ P(x)$ and $g$ is
-      $\forall x \in B.\ \neg P(x)$ with $B \subseteq A$, a revision restricts
-      the first sentence to $A \setminus B$.
-    </p>
-
-    <p lang="zh">
-      <em>例：</em>若 $S$ 包含 $\forall x \in A.\ P(x)$，$g$ 為 $\forall x \in B.\ \neg P(x)$，其中 $B \subseteq A$，則一種修正是將前一個語句限制到 $A \setminus B$。
+      Correctness relates the program to the specification and is governed by
+      capability. Adequacy relates the specification to the objective and is
+      governed by belief.
     </p>
 
     <p>
-      <strong>Definition 1.3 (Contraction).</strong> Let $h \in S$ have domain
-      $D$, and let $X \subseteq D$. The <em>contraction</em> of $S$ by $h$ on
-      $X$ replaces $h$ with its restriction to $D \setminus X$.
-    </p>
-
-    <p lang="zh">
-      <strong>定義 1.3（收縮）</strong>　設 $h \in S$ 的論域為 $D$，且 $X \subseteq D$。$S$ 關於 $h$ 在 $X$ 上的<em>收縮</em>，是將 $h$ 替換為它在 $D \setminus X$ 上的限制。
-    </p>
-
-    <p>
-      <strong>Remark 1.4.</strong> A relaxed requirement is a
-      contraction followed by a revision: to replace
-      &ldquo;within 5 seconds&rdquo; with &ldquo;within 10 seconds,&rdquo;
-      contract by the first on its whole domain, then revise by the second.
-    </p>
-
-    <p lang="zh">
-      <strong>註 1.4</strong>　放寬一項需求，就是先收縮、再修正。例如，要把“5 秒內”放寬為“10 秒內”，先在前者的整個論域上收縮前者，再以後者進行修正。
-    </p>
-
-    <h2>Part II: Process<br /><span lang="zh">第二部分：過程</span></h2>
-
-    <p>
-      Part I is an idealization. In practice, sentences are written in natural
-      language, and satisfiability, entailment and minimality are judged
-      heuristically by a person or an agent. The definitions state what those
-      judgments aim at.
-    </p>
-
-    <p lang="zh">
-      第一部分是一種理想化。實踐中，語句以自然語言寫成，可滿足性、蘊涵與極小性都由人或智能體憑經驗判斷。上述定義刻畫的，正是這些判斷所要達到的目標。
-    </p>
-
-    <h3>2. Tests<br /><span lang="zh">2. 測試</span></h3>
-
-    <p>
-      <strong>Convention 2.0.</strong> Sentences are written as
-      mathematical prose: explicit quantifiers and domains, connectives in
-      their logical sense, and technical terms defined in a glossary.
-      Descriptions too vague to entail anything are kept out of $S$.
-    </p>
-
-    <p lang="zh">
-      <strong>約定 2.0</strong>　語句以數學化的文字書寫：明確寫出量詞與論域，聯結詞取其邏輯含義，術語在術語表中加以定義。過於含糊、蘊涵不出任何結論的描述，不得納入 $S$。
+      The two are linked by a simple observation. If $p$ is correct with
+      respect to $S$ and every program that satisfies $S$ is acceptable, then
+      $p$ is acceptable. So when a program is rejected, either it is not
+      correct with respect to $S$, or $S$ admits an unacceptable program and is
+      not adequate. A rejection is evidence against one of two conjectures,
+      and a developer that does not distinguish them cannot know whether to
+      change its program or its specification.
     </p>
 
     <p>
-      <strong>Definition 2.1 (Test).</strong> A test of
-      $\forall x \in D.\ P(x)$ checks $P(a)$ for some $a \in D$ by running the
-      program once or more, using the witnesses fixed by Convention 0.1. A
-      failing test refutes $P(a)$; a passing test does not establish it. A
-      test belongs to the sentence it was derived from. A test of an instance
-      entailed only by several sentences together belongs to all of them, with
-      one sample in each of their domains. Which elements to sample is a
-      matter of judgment; a sentence that is impractical to check may have no
-      tests.
-    </p>
-
-    <p lang="zh">
-      <strong>定義 2.1（測試）</strong>　$\forall x \in D.\ P(x)$ 的測試，是使用約定 0.1 所確定的見證，將程序運行一次或多次，對某個 $a \in D$ 檢查 $P(a)$。未通過的測試反駁 $P(a)$；通過的測試不能確立 $P(a)$。測試歸屬於導出它的語句。若某個實例只能由幾個語句共同蘊涵，則檢查它的測試歸屬於這幾個語句，並在每個語句的論域中各有一個抽樣元素。抽取哪些元素需要判斷；難以實際檢查的語句也可以沒有測試。
+      Adequacy is defined by equality rather than inclusion because a
+      specification can also be too strong: if
+      $\operatorname{Mod}(S) \subseteq A_t$ and
+      $\operatorname{Mod}(S) \ne A_t$, every correct program is accepted, but
+      the specification excludes acceptable programs and so constrains the
+      developer needlessly. No rejection reveals this kind of inadequacy, a
+      limitation we return to in Section 6.
     </p>
 
     <p>
-      <strong>Principle 2.2.</strong> A test should change only
-      when its sentence changes, and code should change only to make tests
-      pass. Both happen only during reconciliation (section 4).
-    </p>
-
-    <p lang="zh">
-      <strong>原則 2.2</strong>　測試只應隨其語句的改變而改變，代碼只應為使測試通過而改變。兩者都只在調和時發生（第 4 節）。
+      <strong>Example 2.6 (Withdrawal).</strong> A bank asks for a withdrawal
+      operation. Its input is a triple $x = (b, k, m)$ of a balance $b$, an
+      account kind $k \in \{\mathrm{standard}, \mathrm{premium}\}$ and an
+      amount $m$; balances and amounts are in cents and bounded by the range of
+      machine integers, and a balance is negative when an account is
+      overdrawn. The developer specifies that a withdrawal of a positive amount
+      not exceeding the balance succeeds and reduces the balance by that
+      amount, and that every other withdrawal is rejected and leaves the
+      balance unchanged. It then delivers a program.
     </p>
 
     <p>
-      <strong>Principle 2.3.</strong> A program should generalize
-      as the sentences do, rather than special-case the tested inputs.
+      Two things can go wrong. First, the bank may want premium accounts to be
+      able to overdraw by up to <span class="no-math">$100</span>. The
+      specification is then inadequate, and no amount of work on the program
+      will satisfy the bank unless the specification changes. Second, the
+      program may permit a withdrawal that the specification forbids. The
+      program is then incorrect, and the specification needs no change. In
+      both cases the bank reports the same kind of event: a withdrawal that
+      succeeded or failed when it should not have. Telling the two apart is
+      the developer&rsquo;s job. We return to this example in Section 5.3.
     </p>
 
-    <p lang="zh">
-      <strong>原則 2.3</strong>　程序應當像語句一樣具有一般性，而不是針對被測輸入做特殊處理。
-    </p>
+    <h2>3. Development as a decision process</h2>
 
-    <h3>3. New information<br /><span lang="zh">3. 新信息</span></h3>
+    <h3>3.1 The process</h3>
 
     <p>
-      Two conjectures concern the specification, and neither can be proved.
+      Development proceeds in steps: the developer delivers a program and the
+      stakeholder responds.
     </p>
 
-    <p lang="zh">
-      規約涉及兩個猜想，二者都無法證明。
+    <p>
+      <strong>Definition 3.1 (New information).</strong> On receiving $p_t$,
+      the stakeholder returns <em>new information</em> $\delta_t$: a
+      requirement it states, a judgment of $p_t$, or a report of the behavior
+      of $p_t$. The initial program $p_0$ may be empty, in which case
+      $\delta_0$ is the stakeholder&rsquo;s first request.
+    </p>
+
+    <p>
+      <strong>Definition 3.2 (Decision process).</strong> At each step $t$:
     </p>
 
     <ul>
       <li>
-        <strong>Adequacy</strong>: $S$ describes what people want. The
-        intended behavior is never observed directly, so every sentence is a
-        hypothesis. Checking adequacy is <em>validation</em> (Boehm 1984).
+        the state is the pair $(S^*_t, p_t)$ of the latent specification and
+        the current program, of which $S^*_t$ is hidden from the developer;
       </li>
       <li>
-        <strong>Correctness</strong>: the program satisfies $S$. Domains are
-        generally too large to enumerate, so tests check sentences only at
-        sampled elements, and can reveal failures but never establish their
-        absence (Dijkstra 1970). Type-checking avoids enumeration by reasoning
-        symbolically, establishing the sentences expressed by types over their
-        whole domain. Checking correctness is <em>verification</em>.
+        the observation is the new information $\delta_t$, which depends on
+        the state;
       </li>
-    </ul>
-
-    <ul lang="zh">
+      <li>the action is the next program $p_{t+1}$;</li>
       <li>
-        <strong>充分性</strong>：$S$ 描述了人們想要的東西。預期行為永遠無法被直接觀察，因此每個語句都只是假設。檢查充分性稱為<em>確認</em>（validation；Boehm 1984）。
+        the latent specification then moves to $S^*_{t+1}$, and the move may
+        depend on the program just delivered;
       </li>
       <li>
-        <strong>正確性</strong>：程序滿足 $S$。論域通常大到無法窮舉，因此測試只能在抽樣元素上檢查語句：它能揭示錯誤，卻永遠無法證明錯誤不存在（Dijkstra 1970）。類型檢查以符號推理代替窮舉，能在整個論域上確立類型所表達的語句。檢查正確性稱為<em>驗證</em>（verification）。
+        the reward is acceptance of the new program, less the cost of
+        modifying the current program into it.
       </li>
     </ul>
 
     <p>
-      New information refutes one of these conjectures. It is a sentence
-      stated directly, a counterexample, or a retraction.
-    </p>
-
-    <p lang="zh">
-      新信息會反駁其中一個猜想。它可以是直接陳述的語句、反例或撤回。
-    </p>
-
-    <p>
-      <strong>Definition 3.0 (Counterexample).</strong> A counterexample is an
-      observed case in which the program&rsquo;s behavior differs from what was
-      expected, specified by a condition, an expected value and an observed
-      value. Its <em>instance</em> is the singleton-domain sentence that the
-      expected value is produced under the condition.
-    </p>
-
-    <p lang="zh">
-      <strong>定義 3.0（反例）</strong>　反例是觀察到的、程序行為與預期不符的情形，由條件、預期值和觀察值給出。它的<em>實例</em>是一個論域為單元素集的語句：在該條件下，程序產生預期值。
+      Since $S^*_t$ is hidden, this is a partially observable Markov decision
+      process (Kaelbling et al. 1998), and the developer is its agent. The
+      model needs only that reward rises with acceptance and falls with the
+      effort of changing the program; the cost term is why developers modify
+      existing systems rather than rebuild them.
     </p>
 
     <p>
-      <strong>Definition 3.1 (Retraction).</strong> A retraction names a
-      sentence $h$ in $S$ and the part $X$ of its domain on which $h$ should no
-      longer hold.
+      The moving objective is what separates this process from learning a
+      fixed target. Because the next specification may depend on the program
+      delivered, delivering a program both reveals information about the
+      objective and may change it, as when stakeholders discover what they
+      want by seeing what has been built. The model does not assume a fixed
+      objective waiting to be discovered, only a current one at each step. New
+      information may therefore reflect a change in the objective or an error
+      in the developer&rsquo;s belief about it.
     </p>
 
-    <p lang="zh">
-      <strong>定義 3.1（撤回）</strong>　撤回指明 $S$ 中的某個語句 $h$，以及其論域中 $h$ 不應再成立的部分 $X$。
+    <h3>3.2 The ideal solution</h3>
+
+    <p>A solution to the decision process has two parts:</p>
+
+    <ul>
+      <li>
+        a <em>belief update</em>, which maps the current belief, the program
+        delivered and the new information to the next belief,
+        $(b_t, p_t, \delta_t) \mapsto b_{t+1}$;
+      </li>
+      <li>
+        a <em>policy</em>, which maps the next belief and the current program
+        to the next program, $(b_{t+1}, p_t) \mapsto p_{t+1}$.
+      </li>
+    </ul>
+
+    <p>
+      Ideally the belief update is Bayesian: each candidate specification is
+      reweighed by how well it explains the new information and by how
+      specifications tend to move once a program is delivered. Such an update
+      weighs change and error together, so the developer need not determine
+      which occurred. The belief and the current program then summarize the
+      history: the best action depends on past programs and information only
+      through them.
     </p>
 
     <p>
-      <strong>Definition 3.2 (Entailment check).</strong> The entailment check
+      When $S^*_t$ is known and fixed, the belief is a point mass and the
+      policy reduces to the capability $\pi(p \mid S^*_t)$ of Definition 2.4.
+      The rest of a solution arises only when the specification is unknown:
+      forming a belief from the first request, updating it, and choosing
+      programs partly for the information they will elicit.
+    </p>
+
+    <p>
+      The ideal solution is out of reach. A belief over all specifications
+      cannot be written down, the history that determines it grows without
+      bound, and computing an optimal policy is intractable even for finite
+      processes of this kind (Papadimitriou and Tsitsiklis 1987). Its use is as
+      a reference: it says what a practical method approximates and what that
+      method gives up.
+    </p>
+
+    <h3>3.3 A working specification</h3>
+
+    <p>
+      The approximation we consider replaces the belief with a single
+      specification.
+    </p>
+
+    <p>
+      <strong>Definition 3.3 (Working specification).</strong> The developer
+      maintains a single specification $\hat{S}_t$, its <em>working
+      specification</em>. At each step it revises the working specification in
+      light of the new information, then produces the next program from the
+      revised specification and the current program:
+      $$\hat{S}_{t+1} = U(\hat{S}_t,\, p_t,\, \delta_t), \qquad p_{t+1} \sim \pi(\,\cdot \mid \hat{S}_{t+1},\, p_t).$$
+    </p>
+
+    <p>
+      The developer acts as if its working specification were the latent one.
+      The revision $U$ takes the place of the belief update, and capability,
+      now conditioned on the current program as well, takes the place of the
+      policy: it is the means by which new information changes what the
+      developer acts on. Three objects must be kept apart (Table 1).
+    </p>
+
+    <table>
+      <caption>Table 1. The three specification-related objects of the model.</caption>
+      <thead>
+        <tr><th>Object</th><th>Meaning</th><th>Held by</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>$S^*_t$</td>
+          <td>latent specification: what is currently wanted</td>
+          <td>implicit in the stakeholder&rsquo;s judgments</td>
+        </tr>
+        <tr>
+          <td>$b_t$</td>
+          <td>belief about $S^*_t$, in the ideal solution</td>
+          <td>an ideal developer</td>
+        </tr>
+        <tr>
+          <td>$\hat{S}_t$</td>
+          <td>working specification, in place of $b_t$</td>
+          <td>the developer, explicitly</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      The working specification summarizes the history in a form whose size
+      depends on the objective rather than on the length of the history. This
+      matters when a language model serves as the policy, because its context
+      is bounded: it can be given $\hat{S}_{t+1}$ and $p_t$ in place of the
+      history.
+    </p>
+
+    <p>
+      The current program cannot serve as this summary. It is an action: the
+      policy produces it, and it reflects the developer&rsquo;s training and
+      the cost of modification as well as the specification. The stakeholder
+      does not distinguish programs that behave identically (Definition 2.1),
+      so most of what distinguishes one program from another, including its
+      language and structure, corresponds to nothing in $S^*_t$. It enters the
+      policy only through the modification cost and can be omitted where that
+      cost is negligible.
+    </p>
+
+    <p>
+      The working specification is also what makes the observation of
+      Section 2.3 usable. With $S = \hat{S}_t$, a rejected program that is
+      correct with respect to the working specification shows that the working
+      specification is inadequate, while a program that is not correct has a
+      defect whether or not the specification is adequate. Without an explicit
+      working specification there is nothing to check correctness against, and
+      the two failures cannot be separated.
+    </p>
+
+    <p>
+      The approximation has costs. A single specification does not record how
+      uncertain the developer is, so a policy acting on it does not choose
+      programs for the information they would yield. The revision $U$ also has
+      less to work with than a full belief update, since whatever is discarded
+      in forming $\hat{S}_t$ is lost. Keeping several candidate
+      specifications, or recording the points on which $\hat{S}_t$ is
+      unsettled, would give closer approximations.
+    </p>
+
+    <h2>4. The specification as a theory</h2>
+
+    <p>
+      This section gives the working specification a form that can be written
+      down and operated on: a theory, a satisfiable set of sentences about how
+      the software should behave. We write $S_t$ for $\hat{S}_t$.
+    </p>
+
+    <h3>4.1 Sentences</h3>
+
+    <p>
+      <strong>Definition 4.1 (Sentence).</strong> A <em>sentence</em> is a
+      statement about the software&rsquo;s behavior of the form
+      $\forall x \in D.\ P(x)$, where the finite set $D$ is its
+      <em>domain</em>.
+    </p>
+
+    <p>
+      A requirement with an existential quantifier is brought to this form by
+      fixing a witness: &ldquo;within 5 seconds&rdquo; instead of
+      &ldquo;eventually.&rdquo;
+    </p>
+
+    <p>
+      <strong>Definition 4.2 (Satisfaction).</strong> A program satisfies
+      $\forall x \in D.\ P(x)$ when, for every $a \in D$, its behavior has the
+      property $P(a)$. The restriction of the sentence to $\{a\}$ is its
+      <em>instance</em> at $a$. A program satisfies a set of sentences if it
+      satisfies each of them. A set is <em>satisfiable</em> if some program
+      satisfies it, and it <em>entails</em> a sentence if every program that
+      satisfies the set also satisfies the sentence.
+    </p>
+
+    <p>From here on, a specification is a finite, satisfiable set of sentences.</p>
+
+    <h3>4.2 New information</h3>
+
+    <p>
+      Checking adequacy is <em>validation</em> (Boehm 1984); checking
+      correctness is <em>verification</em>. Tests check sentences only at
+      sampled elements, so they can reveal failures but never establish their
+      absence (Dijkstra 1970). Type-checking establishes the sentences
+      expressed by types over their whole domains.
+    </p>
+
+    <p>
+      New information takes one of three forms. A stated requirement is a
+      sentence. A judgment of the program is a counterexample. A withdrawn
+      requirement is a <em>retraction</em>, which names a sentence $h$ in $S$
+      and the part $X$ of its domain on which $h$ should no longer hold.
+    </p>
+
+    <p>
+      <strong>Definition 4.3 (Counterexample).</strong> A counterexample is an
+      observed case in which the program&rsquo;s behavior differs from what
+      was expected, given by a condition, an expected value and an observed
+      value. Its <em>instance</em> is the sentence that the expected value is
+      produced under the condition.
+    </p>
+
+    <p>
+      <strong>Definition 4.4 (Entailment check).</strong> The entailment check
       determines which conjecture new information refutes.
     </p>
 
     <ul>
       <li>
         A sentence $g$ refutes adequacy if $S$ does not entail $g$, and refutes
-        neither otherwise.
+        neither conjecture otherwise.
       </li>
       <li>
         A counterexample refutes correctness if $S$ entails its instance, and
-        adequacy otherwise.
+        refutes adequacy otherwise.
       </li>
       <li>A retraction always refutes adequacy.</li>
     </ul>
 
-    <p lang="zh">
-      <strong>定義 3.2（蘊涵檢查）</strong>　蘊涵檢查用於判定新信息反駁的是哪一個猜想。
-    </p>
-
-    <ul lang="zh">
-      <li>對語句 $g$：若 $S$ 不蘊涵 $g$，則 $g$ 反駁充分性；否則兩個猜想都不反駁。</li>
-      <li>對反例：若 $S$ 蘊涵其實例，則反駁正確性；否則反駁充分性。</li>
-      <li>對撤回：總是反駁充分性。</li>
-    </ul>
-
     <p>
-      <strong>Definition 3.3 (Generalization).</strong> A generalization of a
-      counterexample is a sentence that entails its instance. Many sentences
-      do, so choosing one is an inductive conjecture.
-    </p>
-
-    <p lang="zh">
-      <strong>定義 3.3（泛化）</strong>　反例的泛化，是任何蘊涵其實例的語句。這樣的語句有很多，因此選定其中一個，是一種歸納猜想。
+      If the working specification entails the expected behavior, the program
+      failed to meet its specification; otherwise, the specification failed to
+      describe what was expected.
     </p>
 
     <p>
-      <strong>Principle 3.4.</strong> A counterexample
-      that refutes adequacy should come with its generalization, stated by
-      whoever reported it; otherwise it should be returned with a request for
-      one.
+      A counterexample that refutes adequacy comes with a
+      <em>generalization</em> stated by whoever reported it: a sentence that
+      entails its instance.
     </p>
 
-    <p lang="zh">
-      <strong>原則 3.4</strong>　反駁充分性的反例，應由報告者附上其泛化；否則應退回該反例，並請對方提供泛化。
-    </p>
-
-    <h3>4. Reconciliation<br /><span lang="zh">4. 調和</span></h3>
+    <h3>4.3 Revision</h3>
 
     <p>
-      <strong>Procedure 4.0 (Reconciliation).</strong> Let $S'$ be $S$, a
-      revision of $S$ by $g$, or a contraction of $S$. Let $T$ be the test
-      suite, $p$ the program, and $E$ a set of additional tests, possibly
-      empty, each belonging only to sentences in $S'$.
+      <strong>Definition 4.5 (Restriction).</strong> A restriction of
+      $\forall x \in D.\ P(x)$ is $\forall x \in D'.\ P(x)$ with
+      $D' \subseteq D$. Restriction to the empty domain removes the sentence.
     </p>
-
-    <ol start="0">
-      <li>Remove from $T$ every test that belongs to a removed sentence.</li>
-      <li>
-        For each restricted sentence, remove every test belonging to it whose
-        sample from that sentence lies outside the new domain.
-      </li>
-      <li>If $S'$ is a revision by $g$, derive tests for $g$. Add them and $E$ to $T$.</li>
-      <li>Change $p$, following Principle 2.3, until it type-checks and passes $T$.</li>
-      <li>Return the resulting $T'$ and $p'$.</li>
-    </ol>
-
-    <p lang="zh">
-      <strong>過程 4.0（調和）</strong>　設 $S'$ 為 $S$ 本身、$S$ 關於 $g$ 的修正或 $S$ 的收縮；$T$ 為測試套件，$p$ 為程序，$E$ 為一組額外測試（可以為空），其中每個測試所歸屬的語句都在 $S'$ 中。
-    </p>
-
-    <ol start="0" lang="zh">
-      <li>從 $T$ 中刪除所有歸屬於被移除語句的測試。</li>
-      <li>對每個被限制的語句，刪除歸屬於它、且在它之中的抽樣元素落在新論域之外的測試。</li>
-      <li>若 $S'$ 是關於 $g$ 的修正，則為 $g$ 導出測試，並將這些測試與 $E$ 一併加入 $T$。</li>
-      <li>遵循原則 2.3 修改 $p$，直到它通過類型檢查並通過 $T$ 中的全部測試。</li>
-      <li>返回所得的 $T'$ 和 $p'$。</li>
-    </ol>
 
     <p>
-      <strong>Remark 4.1.</strong> Step 3 is assumed to succeed: $S'$ is satisfiable, and a program that
-      satisfies $S'$ passes $T'$.
+      <strong>Definition 4.6 (Revision).</strong> Let $g$ be a satisfiable
+      sentence. A <em>revision</em> of $S$ by $g$ is a satisfiable
+      specification obtained by adding $g$ to $S$ and restricting as few
+      sentences of $S$ as possible, each as little as possible.
     </p>
-
-    <p lang="zh">
-      <strong>註 4.1</strong>　假設第 3 步總能成功：$S'$ 可滿足，而滿足 $S'$ 的程序能通過 $T'$。
-    </p>
-
-    <h3>5. The software engineering loop<br /><span lang="zh">5. 軟件工程循環</span></h3>
 
     <p>
-      <strong>Definition 5.0 (State).</strong> The state of a project is a
-      triple $(S, T, p)$ of a specification, a test suite and a program, with
-      three invariants:
+      Existing sentences are never rewritten, only restricted. When
+      $S \cup \{g\}$ is satisfiable, nothing is restricted. Otherwise there may
+      be several revisions, and choosing among them is a judgment about which
+      existing requirements the new one overrides. A retraction restricts $h$
+      to the part of its domain outside $X$.
     </p>
 
-    <ol start="0">
+    <h3>4.4 Tests</h3>
+
+    <p>
+      In practice, sentences are written in natural language and these
+      judgments are made heuristically. Sentences are written as mathematical
+      prose, with explicit quantifiers and domains and defined terms.
+    </p>
+
+    <p>
+      <strong>Definition 4.7 (Test).</strong> A test of
+      $\forall x \in D.\ P(x)$ checks $P(a)$ for a sampled $a \in D$ by running
+      the program. A test <em>belongs</em> to the sentence it was derived
+      from, or to several sentences when only together they entail the case it
+      checks. Tests are sound: a program that satisfies $S$ passes every test
+      belonging to sentences of $S$.
+    </p>
+
+    <p>
+      Tests are subordinate to sentences, and code to tests. A test changes
+      only when its sentence changes, and code changes only to make tests pass,
+      generalizing as its sentences do rather than special-casing the tested
+      inputs.
+    </p>
+
+    <h2>5. The software engineering loop</h2>
+
+    <h3>5.1 State and reconciliation</h3>
+
+    <p>
+      <strong>Definition 5.1 (State).</strong> The state of a project is a
+      triple $(S, T, p)$ of a specification, a test suite and a program,
+      subject to three invariants:
+    </p>
+
+    <ol>
       <li>$S$ is satisfiable;</li>
-      <li>every test in $T$ belongs only to sentences in $S$;</li>
+      <li>every test in $T$ belongs to sentences in $S$;</li>
       <li>$p$ type-checks and passes every test in $T$.</li>
     </ol>
 
-    <p lang="zh">
-      <strong>定義 5.0（狀態）</strong>　項目的狀態是一個三元組 $(S, T, p)$，依次為規約、測試套件和程序，並滿足以下三條不變式：
+    <p>The initial state is $(\emptyset, \emptyset, p_0)$.</p>
+
+    <p>
+      When the specification changes, <em>reconciliation</em> restores the
+      invariants:
     </p>
 
-    <ol start="0" lang="zh">
-      <li>$S$ 可滿足；</li>
-      <li>$T$ 中每個測試所歸屬的語句都在 $S$ 中；</li>
-      <li>$p$ 通過類型檢查，並通過 $T$ 中的每個測試。</li>
+    <ol>
+      <li>
+        remove every test whose sentence was removed, or whose sample now lies
+        outside its sentence&rsquo;s domain;
+      </li>
+      <li>add tests for any new sentence;</li>
+      <li>modify the program until it type-checks and passes every test.</li>
     </ol>
 
     <p>
-      The initial state is $(S_0, T_0, p_0) = (\emptyset, \emptyset, p_0)$ for
-      any program $p_0$ that type-checks.
+      Since the specification is satisfiable and tests are sound, some program
+      passes every test. The loop assumes the developer finds one.
     </p>
 
-    <p lang="zh">
-      對任意通過類型檢查的程序 $p_0$，初始狀態為 $(S_0, T_0, p_0) = (\emptyset, \emptyset, p_0)$。
-    </p>
+    <h3>5.2 The loop</h3>
 
     <p>
-      <strong>Procedure 5.1 (Software engineering loop).</strong> The
-      $n$-th piece of new information $\delta_n$ takes $(S_n, T_n, p_n)$ to
-      $(S_{n+1}, T_{n+1}, p_{n+1})$:
+      <strong>Procedure 5.2 (Software engineering loop).</strong> New
+      information $\delta_t$ takes $(S_t, T_t, p_t)$ to
+      $(S_{t+1}, T_{t+1}, p_{t+1})$:
     </p>
 
-    <ol start="0">
+    <ol>
       <li>
-        If $\delta_n$ is a counterexample, reproduce it. If it cannot be
-        reproduced, discard $\delta_n$ and leave the state unchanged.
+        If $\delta_t$ is a counterexample that cannot be reproduced, discard
+        it.
       </li>
       <li>
-        Apply the entailment check (Definition 3.2). If neither conjecture is
-        refuted, discard $\delta_n$ and leave the state unchanged.
+        Apply the entailment check. If neither conjecture is refuted, discard
+        $\delta_t$.
       </li>
       <li>
-        If correctness is refuted, let $S_{n+1} = S_n$, and let $E$ contain
-        the instance of $\delta_n$ as a test belonging to a minimal set of
-        sentences in $S_n$ that together entail it.
+        If correctness is refuted, keep $S_{t+1} = S_t$ and add the instance of
+        $\delta_t$ as a test.
       </li>
       <li>
-        If adequacy is refuted by a sentence or a counterexample, let $g_n$ be
-        $\delta_n$ or its stated generalization (Principle 3.4), written
-        according to Conventions 0.1, 0.3 and 2.0. If $g_n$ is unsatisfiable,
-        return $\delta_n$ to whoever reported it and leave the state unchanged.
-        Otherwise, let $S_{n+1}$ be a revision of $S_n$ by $g_n$, and let $E$
-        contain the instance of $\delta_n$ if $\delta_n$ is a counterexample,
-        and be empty otherwise.
+        If adequacy is refuted by a sentence or a counterexample, let $g_t$ be
+        the sentence or the counterexample&rsquo;s generalization, and let
+        $S_{t+1}$ be a revision of $S_t$ by $g_t$. If $\delta_t$ is a
+        counterexample, add its instance as a test of $g_t$.
       </li>
       <li>
-        If $\delta_n$ is a retraction of $h$ on $X$, let $S_{n+1}$ be the
-        contraction of $S_n$ by $h$ on $X$, and let $E$ be empty.
+        If $\delta_t$ is a retraction of $h$ on $X$, restrict $h$ to the rest
+        of its domain.
       </li>
+      <li>Reconcile the tests and the program with $S_{t+1}$.</li>
       <li>
-        Apply reconciliation to $S_n$, $S_{n+1}$, $T_n$, $p_n$ and $E$, giving
-        $T_{n+1}$ and $p_{n+1}$.
+        If step 4 restricted any sentence, report the conflict to the people
+        involved.
       </li>
-      <li>
-        If $\delta_n$ reverses earlier information on the same case, report the
-        conflict to the people involved.
-      </li>
-      <li>
-        Deploy $p_{n+1}$. Its observed behavior and new requests supply
-        $\delta_{n+1}$.
-      </li>
-    </ol>
-
-    <p lang="zh">
-      <strong>過程 5.1（軟件工程循環）</strong>　第 $n$ 條新信息 $\delta_n$ 將狀態 $(S_n, T_n, p_n)$ 變為 $(S_{n+1}, T_{n+1}, p_{n+1})$：
-    </p>
-
-    <ol start="0" lang="zh">
-      <li>若 $\delta_n$ 是反例，先復現它；若無法復現，則丟棄 $\delta_n$，狀態不變。</li>
-      <li>進行蘊涵檢查（定義 3.2）。若兩個猜想均未被反駁，則丟棄 $\delta_n$，狀態不變。</li>
-      <li>若正確性被反駁，令 $S_{n+1} = S_n$，並令 $E$ 包含 $\delta_n$ 的實例，將其作為一個測試，歸屬於 $S_n$ 中共同蘊涵該實例的一組極小語句。</li>
-      <li>若充分性被語句或反例反駁，令 $g_n$ 為 $\delta_n$ 本身或報告者給出的泛化（原則 3.4），並按約定 0.1、0.3 和 2.0 書寫。若 $g_n$ 不可滿足，則將 $\delta_n$ 退回報告者，狀態不變。否則，令 $S_{n+1}$ 為 $S_n$ 關於 $g_n$ 的修正；若 $\delta_n$ 是反例，令 $E$ 包含其實例，否則令 $E$ 為空。</li>
-      <li>若 $\delta_n$ 是 $h$ 在 $X$ 上的撤回，令 $S_{n+1}$ 為 $S_n$ 關於 $h$ 在 $X$ 上的收縮，並令 $E$ 為空。</li>
-      <li>對 $S_n$、$S_{n+1}$、$T_n$、$p_n$ 和 $E$ 執行調和，得到 $T_{n+1}$ 和 $p_{n+1}$。</li>
-      <li>若 $\delta_n$ 推翻了先前關於同一情形的信息，則向相關人員報告這一衝突。</li>
-      <li>部署 $p_{n+1}$。其運行中觀察到的行為以及新的需求，構成 $\delta_{n+1}$。</li>
+      <li>Deploy $p_{t+1}$. Its behavior and new requests supply $\delta_{t+1}$.</li>
     </ol>
 
     <p>
-      <strong>Remark 5.2.</strong> Each iteration preserves the
-      invariants: revisions and contractions are
-      satisfiable; reconciliation removes the tests of removed sentences and
-      the tests whose samples leave restricted domains, and adds only tests of
-      sentences in $S_{n+1}$; and step 3 of reconciliation gives invariant 2.
-      Every definition, convention and principle above enters
-      the loop at some step.
+      Each iteration preserves the invariants. The loop runs as long as new
+      information arrives.
     </p>
 
-    <p lang="zh">
-      <strong>註 5.2</strong>　每次迭代都保持上述不變式：修正與收縮都可滿足；調和刪除被移除語句的測試以及抽樣元素離開被限制論域的測試，並且只加入 $S_{n+1}$ 中語句的測試；調和的第 3 步保證不變式 2。上文的每一條定義、約定和原則，都在循環的某一步中得到運用。
-    </p>
-
-    <h2>6. Related work<br /><span lang="zh">6. 相關工作</span></h2>
+    <h3>5.3 Example</h3>
 
     <p>
-      AGM theory (Alchourrón, Gärdenfors and
-      Makinson 1985) formalizes the revision and contraction of theories, and
-      Hansson (1999) studies the revision of finite belief bases. Katsuno and
-      Mendelzon (1991) distinguish revising a knowledge base from updating it.
-      Shapiro&rsquo;s Model Inference System (Shapiro 1983) and inductive logic
-      programming (Muggleton and De Raedt 1994) revise logical theories from
-      examples. Clarkson and Schneider (2010) define hyperproperties, which
-      compare executions. Popper (1963) treats scientific theories as
-      refutable conjectures. Naur (1985) describes programming as building a
-      theory, and Lehman (1980) observes that software in use must keep
-      changing.
+      <strong>Example 5.3 (Withdrawal, continued).</strong> Let $X$ be the
+      inputs $x = (b, k, m)$ of Example 2.6, let $\mathrm{succeeds}(x)$ mean
+      the new balance is $b - m$, and let $\mathrm{rejected}(x)$ mean it
+      remains $b$. The working specification starts with three sentences:
+      $$\begin{aligned} \varphi_1 &amp;: \forall x \in D_1.\ \mathrm{succeeds}(x), &amp; D_1 &amp;= \{x \in X : 0 &lt; m \le b\}, \\ \varphi_2 &amp;: \forall x \in D_2.\ \mathrm{rejected}(x), &amp; D_2 &amp;= \{x \in X : m &gt; b\}, \\ \varphi_3 &amp;: \forall x \in D_3.\ \mathrm{rejected}(x), &amp; D_3 &amp;= \{x \in X : m \le 0\}. \end{aligned}$$
     </p>
 
-    <p lang="zh">
-      AGM 理論（Alchourrón、Gärdenfors 和 Makinson 1985）形式化了理論的修正與收縮，Hansson（1999）研究了有限信念基的修正。Katsuno 和 Mendelzon（1991）區分了知識庫的修正與更新。Shapiro 的模型推理系統（Shapiro 1983）與歸納邏輯程序設計（Muggleton 和 De Raedt 1994）根據樣例修正邏輯理論。Clarkson 和 Schneider（2010）定義了超性質，用以刻畫需要比較不同執行的性質。Popper（1963）把科學理論視為可被反駁的猜想。Naur（1985）將編程描述為構建理論的過程；Lehman（1980）則指出，投入使用的軟件必須持續演化。
+    <p>
+      <em>A new requirement.</em> The bank states that premium accounts may
+      overdraw by up to <span class="no-math">$100</span>:
+      $$g_1 : \forall x \in G.\ \mathrm{succeeds}(x), \qquad G = \{x \in X : k = \mathrm{premium},\ m &gt; 0,\ b &lt; m \le b + 10000\}.$$
+      On $G$, $\varphi_2$ requires rejection, so $S$ does not entail $g_1$ and
+      adequacy is refuted. $D_1$ and $D_3$ are disjoint from $G$, so the
+      revision restricts $\varphi_2$ alone, to $D_2 \setminus G$, and adds
+      $g_1$.
     </p>
 
-    <h2>References<br /><span lang="zh">參考文獻</span></h2>
+    <p>
+      <em>A defect.</em> The bank reports that a premium account with
+      <span class="no-math">$50</span> withdrew
+      <span class="no-math">$200</span>: the condition
+      $(5000, \mathrm{premium}, 20000)$ succeeded where rejection was expected.
+      The condition lies in $D_2 \setminus G$, so $\varphi_2$ entails the
+      instance and correctness is refuted. The instance becomes a test of
+      $\varphi_2$, and the program is fixed.
+    </p>
+
+    <p>
+      <em>An inadequacy reported as a defect.</em> The bank reports that a
+      standard account with <span class="no-math">$100</span> was allowed to
+      withdraw 5 cents, though its machines dispense only whole dollars. The
+      condition $(10000, \mathrm{standard}, 5)$ lies in $D_1$, where
+      $\varphi_1$ requires success, so adequacy is refuted. The bank
+      generalizes:
+      $$g_2 : \forall x \in H.\ \mathrm{rejected}(x), \qquad H = \{x \in X : m \bmod 100 \ne 0\}.$$
+      The revision restricts $\varphi_1$ to $D_1 \setminus H$ and $g_1$ to
+      $G \setminus H$, and adds $g_2$.
+    </p>
+
+    <p>
+      The last two reports have the same form, and the entailment check tells
+      them apart: the first changes the program, the second the specification.
+    </p>
+
+    <h3>5.4 The loop in the decision process</h3>
+
+    <p>
+      The loop carries out the approximation of Definition 3.3: $S_t$ is
+      $\hat{S}_t$, steps 1 to 5 are the revision $U$, and reconciliation is the
+      policy, which pays the cost of modification by starting from $p_t$. The
+      test suite is the developer&rsquo;s executable record of what $S_t$
+      requires.
+    </p>
+
+    <p>
+      If every sentence in $S_t$ and $g_t$ holds of the current objective,
+      then $S_t \cup \{g_t\}$ is satisfiable and the revision restricts
+      nothing. A restriction therefore means that either the objective has
+      moved or an earlier sentence was stated too generally. Like the ideal
+      belief update, the loop handles both with one operation, and step 7
+      hands the question to the people who can answer it.
+    </p>
+
+    <h2>6. Discussion</h2>
+
+    <p>
+      <strong>Automation.</strong> The model contains three maps: forming the
+      working specification from the first requests, revising it from new
+      information, and producing a program from it. Each can be performed by a
+      person or by an AI agent, and the model does not depend on whether people
+      retain an advantage at any of them. It does suggest that measuring an
+      agent&rsquo;s ability to produce a program for a stated specification
+      mostly measures capability, and leaves the belief side of the problem
+      largely unmeasured.
+    </p>
+
+    <p>
+      <strong>Limitations.</strong> Empirical work could ask how often reported defects
+      in real projects are inadequacies rather than incorrectness, and whether
+      agents that maintain an explicit working specification and apply the
+      entailment check reach accepted programs in fewer iterations than agents
+      that do not. The model allows the objective to move but says nothing
+      about how it moves. A specification that is too strong is never exposed
+      by a rejection, so the loop corrects it only when the stakeholder
+      retracts something. And the representation of Section 4 handles only new
+      information that can be stated as sentences; feedback that resists such
+      statement, such as general dissatisfaction with an interface, has a place
+      in the decision process but not in the loop.
+    </p>
+
+    <h2>7. Related ideas</h2>
+
+    <p>
+      The observations the model starts from are old. Brooks (1987) located
+      the essential difficulty of software in deciding what to build, Swartout
+      and Balzer (1982) argued that specification and implementation cannot be
+      separated in time, Naur (1985) described programming as theory building,
+      and Lehman (1980) observed that software in use must keep changing. In
+      requirements engineering, Zave and Jackson (1997) separate requirements,
+      domain knowledge and specifications, and Boehm (1984) separates
+      validation from verification, which appear here as checks of adequacy and
+      of correctness.
+    </p>
+
+    <p>
+      The model borrows its parts. Its decision process is close in structure
+      to cooperative inverse reinforcement learning (Hadfield-Menell et al.
+      2016), in which an agent is uncertain about a human&rsquo;s objective and
+      learns it through interaction. Program synthesis (Gulwani et al. 2017)
+      is the capability factor. Its counterexample-guided loops (Solar-Lezama
+      et al. 2006) refute a candidate program against a fixed specification,
+      whereas the loop here must also handle counterexamples that refute the
+      specification. Learning from queries and counterexamples (Angluin 1987)
+      likewise assumes a fixed target. In belief revision (Alchourrón et al.
+      1985), Katsuno and Mendelzon (1991) distinguish revising beliefs about a static world from
+      updating them when the world changes; the loop handles both with one
+      operation. Test-driven development (Beck 2003) organizes code around
+      tests, where the loop makes tests subordinate to sentences. Benchmarks
+      for code generation (Chen et al. 2021; Jimenez et al. 2024) largely
+      measure capability, and Lahiri et al. (2022) use tests to clarify intent
+      before generating code. Finally, the working specification is a
+      conjecture in the sense of Popper (1963): new information refutes either
+      it or the claim that the program satisfies it.
+    </p>
+
+    <h2>8. Conclusion</h2>
+
+    <p>
+      We have modeled software engineering as a partially observable decision
+      process whose hidden state is the specification the stakeholder currently
+      holds, and which moves in response to what is built. In the model,
+      acceptance depends on capability and on belief, and a rejection reflects
+      one of two failures that call for different remedies: an incorrect
+      program or an inadequate specification. Replacing the belief with a
+      single working specification, written as a finite, satisfiable set of
+      sentences, turns the abstract process into something that can be
+      operated: new information is classified by the conjecture it refutes,
+      the specification is revised accordingly, and tests and code are
+      reconciled with it. Programs are the actions taken along the way; the
+      specification is the state that development maintains.
+    </p>
+
+    <h2>References</h2>
 
     <ul>
       <li>
-        Alchourrón, C., Gärdenfors, P. and Makinson, D. (1985). On the logic of
-        theory change: partial meet contraction and revision functions.
+        Alchourrón, C. E., Gärdenfors, P. and Makinson, D. (1985). On the logic
+        of theory change: partial meet contraction and revision functions.
         <i>Journal of Symbolic Logic</i> 50(2).
       </li>
+      <li>
+        Angluin, D. (1987). Learning regular sets from queries and
+        counterexamples. <i>Information and Computation</i> 75(2).
+      </li>
+      <li>Beck, K. (2003). <i>Test-Driven Development: By Example</i>. Addison-Wesley.</li>
       <li>
         Boehm, B. W. (1984). Verifying and validating software requirements and
         design specifications. <i>IEEE Software</i> 1(1).
       </li>
       <li>
-        Clarkson, M. R. and Schneider, F. B. (2010). Hyperproperties.
-        <i>Journal of Computer Security</i> 18(6).
+        Brooks, F. P., Jr. (1987). No silver bullet: essence and accidents of
+        software engineering. <i>Computer</i> 20(4).
+      </li>
+      <li>
+        Chen, M. et al. (2021). Evaluating large language models trained on
+        code. arXiv:2107.03374.
       </li>
       <li>Dijkstra, E. W. (1970). Notes on structured programming. EWD249.</li>
-      <li>Hansson, S. O. (1999). <i>A Textbook of Belief Dynamics</i>. Kluwer.</li>
       <li>
-        Katsuno, H. and Mendelzon, A. (1991). On the difference between
+        Gulwani, S., Polozov, O. and Singh, R. (2017). Program synthesis.
+        <i>Foundations and Trends in Programming Languages</i> 4(1&ndash;2).
+      </li>
+      <li>
+        Hadfield-Menell, D., Dragan, A., Abbeel, P. and Russell, S. (2016).
+        Cooperative inverse reinforcement learning. <i>NIPS 2016</i>.
+      </li>
+      <li>
+        Jimenez, C. E., Yang, J., Wettig, A., Yao, S., Pei, K., Press, O. and
+        Narasimhan, K. (2024). SWE-bench: can language models resolve
+        real-world GitHub issues? <i>ICLR 2024</i>.
+      </li>
+      <li>
+        Kaelbling, L. P., Littman, M. L. and Cassandra, A. R. (1998). Planning
+        and acting in partially observable stochastic domains.
+        <i>Artificial Intelligence</i> 101.
+      </li>
+      <li>
+        Katsuno, H. and Mendelzon, A. O. (1991). On the difference between
         updating a knowledge base and revising it. <i>KR 1991</i>.
+      </li>
+      <li>
+        Lahiri, S. K. et al. (2022). Interactive code generation via
+        test-driven user-intent formalization. arXiv:2208.05950.
       </li>
       <li>
         Lehman, M. M. (1980). Programs, life cycles, and laws of software
         evolution. <i>Proceedings of the IEEE</i> 68(9).
       </li>
       <li>
-        Muggleton, S. and De Raedt, L. (1994). Inductive logic programming:
-        theory and methods. <i>Journal of Logic Programming</i> 19&ndash;20.
-      </li>
-      <li>
         Naur, P. (1985). Programming as theory building.
         <i>Microprocessing and Microprogramming</i> 15(5).
       </li>
-      <li>Pnueli, A. (1977). The temporal logic of programs. <i>FOCS 1977</i>.</li>
+      <li>
+        Papadimitriou, C. H. and Tsitsiklis, J. N. (1987). The complexity of
+        Markov decision processes. <i>Mathematics of Operations Research</i>
+        12(3).
+      </li>
       <li>Popper, K. (1963). <i>Conjectures and Refutations</i>. Routledge.</li>
-      <li>Shapiro, E. (1983). <i>Algorithmic Program Debugging</i>. MIT Press.</li>
+      <li>
+        Solar-Lezama, A., Tancau, L., Bodik, R., Seshia, S. and Saraswat, V.
+        (2006). Combinatorial sketching for finite programs. <i>ASPLOS 2006</i>.
+      </li>
+      <li>
+        Swartout, W. and Balzer, R. (1982). On the inevitable intertwining of
+        specification and implementation. <i>Communications of the ACM</i>
+        25(7).
+      </li>
+      <li>
+        Zave, P. and Jackson, M. (1997). Four dark corners of requirements
+        engineering. <i>ACM Transactions on Software Engineering and
+        Methodology</i> 6(1).
+      </li>
     </ul>
   </body>
 </html>

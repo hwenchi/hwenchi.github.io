@@ -90,6 +90,13 @@ body.essay {
   padding: 0 1.5rem;
 }
 
+/* Long display equations scroll on narrow screens instead of overflowing
+   the page. */
+.essay .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
 /* Hide scrollbars in the essay reader — the horizontal card strip, the
    sidebar, and each essay's own in-card scrolling — without disabling
    scrolling itself. A visible scrollbar also eats into an essay's available
@@ -230,14 +237,14 @@ body.writing-index {
 .essay-card-preface {
   flex: 0 0 auto;
   direction: ltr;
-  margin-left: 5rem;
+  margin-left: 8rem;
 }
 
 .preface-scroll {
   writing-mode: vertical-rl;
   text-orientation: mixed;
   height: 100%;
-  padding: 2rem 1.25rem;
+  padding: 2rem 2.5rem;
   box-sizing: border-box;
   font-family: 'Noto Serif TC', 'Noto Serif SC', 'Songti SC', 'STSong', 'SimSun', serif;
 }
@@ -251,7 +258,7 @@ body.writing-index {
 
 .preface-scroll p {
   font-size: 1.05em;
-  line-height: 1.9;
+  line-height: 2.4;
   letter-spacing: 0.02em;
   margin: 0;
 }

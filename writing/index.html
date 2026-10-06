@@ -13,8 +13,8 @@
       <nav class="essay-menu">
         <p class="essay-menu-home"><a href="/">&larr; Wenqi He</a></p>
         <ul>
-          <li><button type="button" class="active" data-index="0"><em>Preface</em><br /><span lang="zh">序</span></button></li>
-          <li><button type="button" data-index="1"><em>The Software Engineering Loop</em><br /><span lang="zh">軟件工程循環</span></button></li>
+          <li><button type="button" data-index="0"><em>Preface</em><br /><span lang="zh">序</span></button></li>
+          <li><button type="button" class="active" data-index="1"><em>The Software Engineering Loop</em><br /><span lang="zh">軟件工程循環</span></button></li>
           <li><button type="button" data-index="2"><em>The Computationalist Manifesto</em><br /><span lang="zh">計算主義宣言</span></button></li>
           <li><button type="button" data-index="3"><em>Some Thoughts on AI Coding</em><br /><span lang="zh">關於 AI 編程的一些思考</span></button></li>
           <li><button type="button" data-index="4"><em>On Software Engineering as a Career</em><br /><span lang="zh">論軟件工程作為職業</span></button></li>
@@ -58,15 +58,24 @@
         for (const b of buttons) b.classList.toggle("active", b.dataset.index === index);
       };
 
+      const scrollToCard = (index, behavior) =>
+        viewer
+          .querySelector(`.essay-card[data-index="${index}"]`)
+          ?.scrollIntoView({ behavior, block: "nearest", inline: "end" });
+
       menu.addEventListener("click", (e) => {
         const btn = e.target.closest("button[data-index]");
         if (!btn) return;
 
         setActive(btn.dataset.index);
-        viewer
-          .querySelector(`.essay-card[data-index="${btn.dataset.index}"]`)
-          ?.scrollIntoView({ behavior: "smooth", inline: "end" });
+        scrollToCard(btn.dataset.index, "smooth");
       });
+
+      // Open on the Software Engineering Loop. Scroll again once fonts load,
+      // since the preface's width, and so the card's offset, depends on them.
+      const initial = menu.querySelector("button.active").dataset.index;
+      scrollToCard(initial, "instant");
+      document.fonts.ready.then(() => scrollToCard(initial, "instant"));
     </script>
   </body>
 </html>
